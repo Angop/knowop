@@ -168,6 +168,9 @@ class Network:
         self.i_size = i_size
         self.o_size = o_size
         self.layers = self.initLayers()
+        #Hyperparameters
+        self.batchSize = 10
+        self.learningRate = 0.1
 
     def initLayers(self):
         """
@@ -190,12 +193,20 @@ class Network:
         """
         Trains the model given a training set
         """
+        # for _ in range(1000):
+        # Get a random batch of inputs from training set
+        batch = random.sample(trainSet, self.batchSize)
+        # Run each input through the network
+        outputs = []
+        for input, expected in batch:
+            outputs.append(self.forwardProp(input))
+        # Backpropagate the error
+        self.backProp(outputs, batch.values())
+
+    def forwardProp(self, input):
         pass
 
-    def forwardProp(self):
-        pass
-
-    def backProp(self):
+    def backProp(self, output, expected):
         pass
 
 
