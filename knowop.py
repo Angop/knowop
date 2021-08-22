@@ -162,6 +162,45 @@ def create_samples(f: Callable[..., int], n_args: int, n_bits: int,
 
 
 
+class Network:
+
+    def __init__(self, i_size: int, o_size: int):
+        self.i_size = i_size
+        self.o_size = o_size
+        self.layers = self.initLayers()
+
+    def initLayers(self):
+        """
+        Initializes the layers
+        """
+        layers = []
+        # input layer
+        layers.append(Layer((self.i_size, 0), False))
+
+        # one hidden layer
+        avgSize = (self.i_size + self.o_size) // 2
+        layers.append(Layer((avgSize, self.i_size), False))
+
+        # output layer
+        layers.append(Layer((self.o_size, avgSize), False))
+
+        return layers
+
+    def train(self, trainSet):
+        """
+        Trains the model given a training set
+        """
+        pass
+
+    def forwardProp(self):
+        pass
+
+    def backProp(self):
+        pass
+
+
+
+
 def train_network(samples: Dict[Tuple[int, ...], Tuple[int, ...]],
                   i_size: int, o_size: int) -> List[Layer]:
     """
@@ -191,12 +230,12 @@ def main() -> None:
     print("Train Size:", len(train_set), "Test Size:", len(test_set))
 
     network = train_network(train_set, n_args * n_bits, n_bits)
-    for inputs in test_set:
-        output = tuple(round(n, 2) for n in propagate_forward(network, inputs))
-        bits = tuple(round(n) for n in output)
-        print("OUTPUT:", output)
-        print("BITACT:", bits)
-        print("BITEXP:", samples[inputs], end="\n\n")
+    # for inputs in test_set:
+    #     output = tuple(round(n, 2) for n in propagate_forward(network, inputs))
+    #     bits = tuple(round(n) for n in output)
+    #     print("OUTPUT:", output)
+    #     print("BITACT:", bits)
+    #     print("BITEXP:", samples[inputs], end="\n\n")
 
 if __name__ == "__main__":
     main()

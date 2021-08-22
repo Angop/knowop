@@ -6,7 +6,9 @@ import unittest
 from knowop import *
 
 
-class TestBoardStupid(unittest.TestCase):
+class TestKnowOp(unittest.TestCase):
     
-    def test_(self):
-        pass
+    def test_init(self):
+        net = Network(16, 8)
+
+        self.assertEqual(len(net.layers), 3)
