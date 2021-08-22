@@ -209,10 +209,12 @@ def train_network(samples: Dict[Tuple[int, ...], Tuple[int, ...]],
     (forward) and their losses (backward) to update its weights and biases.
     Return the resulting trained network.
     """
-    pass
-
-
-
+    # Create network
+    network = Network(i_size, o_size)
+    # Train network
+    network.train(samples)
+    # Return trained network
+    return network
 
 def main() -> None:
     random.seed(0)
