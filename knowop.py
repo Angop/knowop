@@ -186,7 +186,7 @@ class Network:
         layers.append(Layer((avgSize, self.i_size), False))
 
         # output layer
-        layers.append(Layer((self.o_size, avgSize), False))
+        layers.append(Layer((self.o_size, avgSize), True))
 
         return layers
 
@@ -201,7 +201,7 @@ class Network:
         # Run each input through the network
         res = []
         for input, expected in batch:
-            res.append(self.forwardProp(input), expected)
+            res.append((self.forwardProp(input), expected))
         # Backpropagate the error
         self.backPropBatch(res)
 
@@ -209,14 +209,14 @@ class Network:
         """
         Propogates the input through the input and returns the output
         """
-        print(input)
         for layer in self.layers:
+            print(f"INPUT LEN: {len(input)}")
             input = layer.activate(input)
-            print(input)
         return input
 
     def backPropBatch(self, results):
         cost = self.getCost(results)
+        print("COST: ",cost)
 
 
         pass
@@ -228,8 +228,14 @@ class Network:
         """
         Reurns the cost, which is the average of each loss
         """
-        loss = [Math.loss(results[i][0], results[i][1]) for i in
-            range(len(results))]
+        loss = []
+        for i in range(len(results)):
+            # for one output/expected pair
+            print("OUTPUT: ", results[i][0], "EXPECTED: ", results[i][0])
+            for j in range(len(results[i][0])):
+                # for each bit in the ouput/expected pair
+                loss.append(Math.loss(results[i][0][j], results[i][1][j]))
+
         return sum(loss) / len(loss)
 
 

@@ -42,3 +42,22 @@ class TestKnowOp(unittest.TestCase):
     def test_getCost(self):
         # TODO
         pass
+
+
+
+    def test_full(self):
+        random.seed(0)
+        f = lambda x, y: x + y  # operation to learn
+        n_args = 2              # arity of operation
+        n_bits = 8              # size of each operand
+
+        samples = create_samples(f, n_args, n_bits)
+        train_pct = 0.95
+        train_set = {inputs: samples[inputs]
+                   for inputs in random.sample(list(samples),
+                                               k=int(len(samples) * train_pct))}
+        test_set = {inputs: samples[inputs]
+                   for inputs in samples if inputs not in train_set}
+        # print("Train Size:", len(train_set), "Test Size:", len(test_set))
+
+        network = train_network(train_set, n_args * n_bits, n_bits)
