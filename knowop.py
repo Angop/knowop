@@ -199,17 +199,38 @@ class Network:
         batch = [(x, trainSet[x]) for x in random.sample(list(trainSet),
             self.batchSize)]
         # Run each input through the network
-        outputs = []
+        res = []
         for input, expected in batch:
-            outputs.append(self.forwardProp(input))
+            res.append(self.forwardProp(input), expected)
         # Backpropagate the error
-        self.backProp(outputs, batch.values())
+        self.backPropBatch(res)
 
     def forwardProp(self, input):
+        """
+        Propogates the input through the input and returns the output
+        """
+        print(input)
+        for layer in self.layers:
+            input = layer.activate(input)
+            print(input)
+        return input
+
+    def backPropBatch(self, results):
+        cost = self.getCost(results)
+
+
         pass
 
     def backProp(self, output, expected):
         pass
+
+    def getCost(self, results):
+        """
+        Reurns the cost, which is the average of each loss
+        """
+        loss = [Math.loss(results[i][0], results[i][1]) for i in
+            range(len(results))]
+        return sum(loss) / len(loss)
 
 
 

@@ -28,3 +28,17 @@ class TestKnowOp(unittest.TestCase):
         # print(train_set)
         batch = [(x, train_set[x]) for x in random.sample(list(train_set), net.batchSize)]
         # print(batch)
+    
+    def test_forwardProp(self):
+        net = Network(16, 8)
+        self.assertEqual(len(net.layers), 3)
+
+        input = (0, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 0, 0, 1, 1, 0)
+        res = net.forwardProp(input)
+        print(res)
+
+        self.assertEqual(len(res), 8)
+    
+    def test_getCost(self):
+        # TODO
+        pass
