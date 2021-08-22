@@ -1,5 +1,5 @@
 # Name:         Angela Kerlin
-# Name:
+# Name:         Marcelo Jimenez
 # Course:       CSC 480
 # Instructor:   Daniel Kauffman
 # Assignment:   Know Op
