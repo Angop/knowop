@@ -165,12 +165,13 @@ def create_samples(f: Callable[..., int], n_args: int, n_bits: int,
 class Network:
 
     def __init__(self, i_size: int, o_size: int):
-        self.i_size = i_size
-        self.o_size = o_size
-        self.layers = self.initLayers()
         #Hyperparameters
         self.batchSize = 10
         self.learningRate = 0.1
+
+        self.i_size = i_size
+        self.o_size = o_size
+        self.layers = self.initLayers()
 
     def initLayers(self):
         """
@@ -195,7 +196,8 @@ class Network:
         """
         # for _ in range(1000):
         # Get a random batch of inputs from training set
-        batch = random.sample(trainSet, self.batchSize)
+        batch = [(x, trainSet[x]) for x in random.sample(list(trainSet),
+            self.batchSize)]
         # Run each input through the network
         outputs = []
         for input, expected in batch:

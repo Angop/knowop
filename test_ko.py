@@ -13,10 +13,6 @@ class TestKnowOp(unittest.TestCase):
 
         self.assertEqual(len(net.layers), 3)
 
-    def test_init_bad(self):
-        with self.assertRaises(ValueError):
-            net = Network(16, 8, 1)
-    
     def test_understanding(self):
         random.seed(0)
         f = lambda x, y: x + y  # operation to learn
@@ -29,5 +25,6 @@ class TestKnowOp(unittest.TestCase):
                for inputs in random.sample(list(samples),
                                            k=int(len(samples) * train_pct))}
 
-        batch = random.sample(train_set, self.batchSize)
-        print(batch)
+        # print(train_set)
+        batch = [(x, train_set[x]) for x in random.sample(list(train_set), net.batchSize)]
+        # print(batch)
