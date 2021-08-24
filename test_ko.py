@@ -35,40 +35,47 @@ class TestKnowOp(unittest.TestCase):
 
         input = (0, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 0, 0, 1, 1, 0)
         res = net.forwardProp(input)
-        print(res)
+        # print(res)
 
         self.assertEqual(len(res), 8)
     
     def test_layer_shapes(self):
         net = Network(16, 8)
 
-        print(net.layers[0])
+        # print(net.layers[0])
 
-    def test_forwardProp(self):
+    def test_backProp(self):
         net = Network(16, 8)
 
-        res = net.forwardProp(input)
-        net.backPropBatch(res)
-    
-    def test_getCost(self):
-        # TODO
-        pass
-
-
-
-    def test_full(self):
-        random.seed(0)
         f = lambda x, y: x + y  # operation to learn
         n_args = 2              # arity of operation
         n_bits = 8              # size of each operand
-
         samples = create_samples(f, n_args, n_bits)
         train_pct = 0.95
         train_set = {inputs: samples[inputs]
                    for inputs in random.sample(list(samples),
                                                k=int(len(samples) * train_pct))}
-        test_set = {inputs: samples[inputs]
-                   for inputs in samples if inputs not in train_set}
-        # print("Train Size:", len(train_set), "Test Size:", len(test_set))
+        net.train(train_set)
+    
+    # def test_getCost(self):
+    #     # TODO
+    #     pass
 
-        network = train_network(train_set, n_args * n_bits, n_bits)
+
+
+    # def test_full(self):
+    #     random.seed(0)
+    #     f = lambda x, y: x + y  # operation to learn
+    #     n_args = 2              # arity of operation
+    #     n_bits = 8              # size of each operand
+
+    #     samples = create_samples(f, n_args, n_bits)
+    #     train_pct = 0.95
+    #     train_set = {inputs: samples[inputs]
+    #                for inputs in random.sample(list(samples),
+    #                                            k=int(len(samples) * train_pct))}
+    #     test_set = {inputs: samples[inputs]
+    #                for inputs in samples if inputs not in train_set}
+    #     # print("Train Size:", len(train_set), "Test Size:", len(test_set))
+
+    #     network = train_network(train_set, n_args * n_bits, n_bits)

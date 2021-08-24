@@ -214,7 +214,6 @@ class Network:
         Propogates the input through the input and returns the output
         """
         for layer in self.layers:
-            print(f"INPUT LEN: {len(input)}")
             input = layer.activate(input)
         return input
 
@@ -231,11 +230,12 @@ class Network:
             l = self.layers[i]
             
             # dzn = dan ⊙ gn'(zn)
-            dan = []
             gnzn = []
+
+            dan = [Math.loss_prime(output[j], expected[j])
+                for j in range(len(output))]
             for n in range(len(l.z)):
                 # for each neuron
-                dan.append(Math.loss_prime(output[n], expected[n]))
                 gnzn.append(Math.sigmoid_prime(l.z[n]) if l.g == Math.sigmoid
                     else Math.relu_prime(l.z[n]))
             dzn = Math.dot(gnzn, dan)
@@ -248,8 +248,9 @@ class Network:
             dbn = dzn
              
             # dan-1 = WTn * dzn
-            wtn = Math.transpose(self.layers[i].w)
+            wtn = Math.transpose(l.w)
             dan1 = Math.matmul(wtn, [[dzn]])
+            print(dan1)
 
     def getCost(self, results):
         """
