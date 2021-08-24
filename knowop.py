@@ -153,10 +153,13 @@ def create_samples(f: Callable[..., int], n_args: int, n_bits: int,
     for inputs in itertools.product((0, 1), repeat=n_args * n_bits):
         ints = [int("".join(str(bit) for bit in inputs[i:i + n_bits]), 2)
                 for i in range(0, len(inputs), n_bits)]
-        output = f(*ints)
-        if output < max_arg:
-            bit_string = ("{:0" + str(n_bits) + "b}").format(output)
-            samples[inputs] = tuple(int(bit) for bit in bit_string)
+        try:
+            output = f(*ints)
+            if 0 <= output < max_arg:
+                bit_string = ("{:0" + str(n_bits) + "b}").format(output)
+                samples[inputs] = tuple(int(bit) for bit in bit_string)
+        except ZeroDivisionError:
+            pass
     return samples
 
 
