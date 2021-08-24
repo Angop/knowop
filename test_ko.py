@@ -39,6 +39,17 @@ class TestKnowOp(unittest.TestCase):
 
         self.assertEqual(len(res), 8)
     
+    def test_layer_shapes(self):
+        net = Network(16, 8)
+
+        print(net.layers[0])
+
+    def test_forwardProp(self):
+        net = Network(16, 8)
+
+        res = net.forwardProp(input)
+        net.backPropBatch(res)
+    
     def test_getCost(self):
         # TODO
         pass

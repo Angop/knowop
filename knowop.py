@@ -205,6 +205,7 @@ class Network:
         res = []
         for input, expected in batch:
             res.append((self.forwardProp(input), expected))
+            # print cost of iteration
         # Backpropagate the error
         self.backPropBatch(res)
 
@@ -221,11 +222,35 @@ class Network:
         cost = self.getCost(results)
         print("COST: ",cost)
 
-
-        pass
+        for output, expected in results:
+            self.backProp(output, expected)
 
     def backProp(self, output, expected):
-        pass
+        for i in range(len(self.layers) - 1, 0, -1):
+            # for each layer
+            l = self.layers[i]
+            
+            # dzn = dan ⊙ gn'(zn)
+            dan = []
+            gnzn = []
+            for n in range(len(l.z)):
+                # for each neuron
+                dan.append(Math.loss_prime(output[n], expected[n]))
+                gnzn.append(Math.sigmoid_prime(l.z[n]) if l.g == Math.sigmoid
+                    else Math.relu_prime(l.z[n]))
+            dzn = Math.dot(gnzn, dan)
+
+            # dWn = dzn * aTn-1
+            atn1 = Math.transpose(self.layers[i - 1].a)
+            dwn = Math.matmul([[dzn]], [atn1])
+
+            # dbn = dzn
+            dbn = dzn
+             
+            # dan-1 = WTn * dzn
+            wtn = Math.transpose(i.w)
+            dan1 = Math.matmul(wtn, [[dzn]])
+
 
     def getCost(self, results):
         """
