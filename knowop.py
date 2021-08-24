@@ -241,16 +241,15 @@ class Network:
             dzn = Math.dot(gnzn, dan)
 
             # dWn = dzn * aTn-1
-            atn1 = Math.transpose(self.layers[i - 1].a)
-            dwn = Math.matmul([[dzn]], [atn1])
+            atn1 = Math.transpose([self.layers[i - 1].a])
+            dwn = Math.matmul([[dzn]], atn1)
 
             # dbn = dzn
             dbn = dzn
              
             # dan-1 = WTn * dzn
-            wtn = Math.transpose(i.w)
+            wtn = Math.transpose(self.layers[i].w)
             dan1 = Math.matmul(wtn, [[dzn]])
-
 
     def getCost(self, results):
         """
