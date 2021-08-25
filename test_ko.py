@@ -28,6 +28,13 @@ class TestKnowOp(unittest.TestCase):
         # print(train_set)
         batch = [(x, train_set[x]) for x in random.sample(list(train_set), net.batchSize)]
         # print(batch)
+
+        i = 0
+        for layer in net.layers:
+            print(f"WEIGHTS of layer {i}: ", layer.w)
+            print("\n")
+            i += 1
+
     
     def test_forwardProp(self):
         net = Network(16, 8)

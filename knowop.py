@@ -170,7 +170,7 @@ class Network:
     def __init__(self, i_size: int, o_size: int):
         #Hyperparameters
         self.batchSize = 10
-        self.learningRate = 0.1
+        self.learningRate = 0.9
 
         self.i_size = i_size
         self.o_size = o_size
@@ -223,9 +223,13 @@ class Network:
 
         for output, expected in results:
             self.backProp(output, expected)
+        
+        self.updateLRate()
 
     def backProp(self, output, expected):
+        dan1s = []
         for i in range(len(self.layers) - 1, 0, -1):
+            print("\n\nLAYER ", i)
             # for each layer
             l = self.layers[i]
             
@@ -251,6 +255,24 @@ class Network:
             wtn = Math.transpose(l.w)
             dan1 = Math.matmul(wtn, [[dzn]])
             print(dan1)
+
+            dan1s.append(dan1)
+
+            # Save the gradient
+        self.updateWeights(dan1s)
+
+    def updateWeights(self, gradients):
+        """
+        """
+        j = 0
+        for i in range(len(self.layers) - 1, 0, -1):
+            l = self.layers[i]
+            l.w = l.w - (self.learningRate * gradients[j]) # TODO
+
+    def updateLRate(self):
+        # TODO
+        pass
+
 
     def getCost(self, results):
         """
