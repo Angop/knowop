@@ -220,34 +220,40 @@ class Network:
 
     def backPropBatch(self, results):
         cost = self.getCost(results)
-        print(f"COST: {cost} LEARNING RATE: {self.learningRate}")
+        # print(f"COST: {cost} LEARNING RATE: {self.learningRate}")
 
         for output, expected in results:
             self.backProp(output, expected)
         
-
     def backProp(self, output, expected):
-        dan1s = []
+        dwns = []
         dbns = []
+        # Initialize da to the derivative of the loss function
+        dan = [Math.loss_prime(output[j], expected[j])
+                for j in range(len(output))]
         for i in range(len(self.layers) - 1, 0, -1):
             # print("\n\nLAYER ", i)
-            # for each layer
+            # Get Layer
             l = self.layers[i]
             
             # dzn = dan ⊙ gn'(zn)
             gnzn = []
-
-            dan = [Math.loss_prime(output[j], expected[j])
-                for j in range(len(output))]
+        
             for n in range(len(l.z)):
                 # for each neuron
                 gnzn.append(Math.sigmoid_prime(l.z[n]) if l.g == Math.sigmoid
                     else Math.relu_prime(l.z[n]))
+            
+            # print(f"dan: {dan}")
+            # print(f"gnzn: {gnzn}")
             dzn = Math.dot(gnzn, dan)
+            # print(f"dzn: {dzn}")
 
             # dWn = dzn * aTn-1
             atn1 = Math.transpose([self.layers[i - 1].a])
             dwn = Math.matmul([[dzn]], atn1)
+            # Add to weight matrices list
+            dwns.append(dwn)
 
             # dbn = dzn
             dbn = dzn
@@ -255,15 +261,13 @@ class Network:
              
             # dan-1 = WTn * dzn
             wtn = Math.transpose(l.w)
-            dan1 = Math.matmul(wtn, [[dzn]])
-            # print(dan1)
-
-            dan1s.append(dan1)
+            dan = Math.matmul(wtn, [[dzn]])
+            # Turn dan to a 1d list
+            dan = [x[0] for x in dan]
 
             # Save the gradient
-        self.updateWeights(dan1s)
+        self.updateWeights(dwns)
         self.updateBiases(dbns)
-        # print(f"DANNIES: {dan1s}")
 
     def updateWeights(self, gradients):
         """
