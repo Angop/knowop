@@ -214,8 +214,13 @@ class Network:
         """
         Propogates the input through the input and returns the output
         """
+        i = 0
         for layer in self.layers:
+            # print(f"Layer {i}")
+            # print(f"initial: {layer.a}")
             input = layer.activate(input)
+            # print(f"after: {layer.a}")
+            i += 1
         return input
 
     def backPropBatch(self, results):
@@ -250,8 +255,11 @@ class Network:
             # print(f"dzn: {dzn}")
 
             # dWn = dzn * aTn-1
+            # print(f"Layer {i}: {self.layers[i - 1].a}")
             atn1 = Math.transpose([self.layers[i - 1].a])
+            # print(f"atn1: {atn1}")
             dwn = Math.matmul([[dzn]], atn1)
+            # print(f"dwn: {dwn}")
             # Add to weight matrices list
             dwns.append(dwn)
 
@@ -272,22 +280,20 @@ class Network:
     def updateWeights(self, gradients):
         """
         """
+        # print("updating")
+        # print(f"dwn: {gradients}")
         # reverse gradients list
         gradients.reverse()
         # print(f"\nUpdating parameters: {gradients}")
         for i in range(len(self.layers) - 1, 0, -1):
             l = self.layers[i]
             # Calulate lr * dan1
-            dan1 = gradients[i - 1]
             lr = self.learningRate
-            subs = [x[0] * lr for x in dan1]
+            subs = lr * gradients[i - 1][0][0]
             # print(f"Subs: {subs}")
             for j in range(len(l.w)):
-                # print(f"Weight of neuron: {l.w[j]}")
-                # Substract subs from weight of neuron
                 for k in range(len(l.w[j])):
-                    l.w[j][k] -= subs[k]
-                # print(f"Updated weight of neuron: {l.w[j]}")
+                    l.w[j][k] -= subs
 
     def updateBiases(self, gradients):
         """
@@ -302,9 +308,8 @@ class Network:
             # Calulate lr * dan1
             dbn = gradients[i - 1]
             lr = self.learningRate
-            # subs = [x * lr for x in dbn]
             sub = lr * dbn
-            # print(f"Subs: {subs}")
+            # print(f"Subs: {sub}")
             for j in range(len(l.b)):
                 # print(f"Weight of neuron: {l.b[j]}")
                 # Substract subs from weight of neuron
