@@ -197,17 +197,17 @@ class Network:
         """
         Trains the model given a training set
         """
-        # for _ in range(1000):
-        # Get a random batch of inputs from training set
-        batch = [(x, trainSet[x]) for x in random.sample(list(trainSet),
-            self.batchSize)]
-        # Run each input through the network
-        res = []
-        for input, expected in batch:
-            res.append((self.forwardProp(input), expected))
-            # print cost of iteration
-        # Backpropagate the error
-        self.backPropBatch(res)
+        for _ in range(1000):
+            # Get a random batch of inputs from training set
+            batch = [(x, trainSet[x]) for x in random.sample(list(trainSet),
+                self.batchSize)]
+            # Run each input through the network
+            res = []
+            for input, expected in batch:
+                res.append((self.forwardProp(input), expected))
+                # print cost of iteration
+            # Backpropagate the error
+            self.backPropBatch(res)
 
     def forwardProp(self, input):
         """
@@ -219,7 +219,7 @@ class Network:
 
     def backPropBatch(self, results):
         cost = self.getCost(results)
-        print("COST: ",cost)
+        print("COST: ", cost)
 
         for output, expected in results:
             self.backProp(output, expected)
@@ -229,7 +229,7 @@ class Network:
     def backProp(self, output, expected):
         dan1s = []
         for i in range(len(self.layers) - 1, 0, -1):
-            print("\n\nLAYER ", i)
+            # print("\n\nLAYER ", i)
             # for each layer
             l = self.layers[i]
             
@@ -254,7 +254,7 @@ class Network:
             # dan-1 = WTn * dzn
             wtn = Math.transpose(l.w)
             dan1 = Math.matmul(wtn, [[dzn]])
-            print(dan1)
+            # print(dan1)
 
             dan1s.append(dan1)
 
@@ -264,10 +264,22 @@ class Network:
     def updateWeights(self, gradients):
         """
         """
-        j = 0
+        # reverse gradients list
+        gradients.reverse()
+        # print(f"\nUpdating parameters: {gradients}")
         for i in range(len(self.layers) - 1, 0, -1):
             l = self.layers[i]
-            l.w = l.w - (self.learningRate * gradients[j]) # TODO
+            # Calulate lr * dan1
+            dan1 = gradients[i - 1]
+            lr = self.learningRate
+            subs = [x[0] * lr for x in dan1]
+            # print(f"Subs: {subs}")
+            for j in range(len(l.w)):
+                # print(f"Weight of neuron: {l.w[j]}")
+                # Substract subs from weight of neuron
+                for k in range(len(l.w[j])):
+                    l.w[j][k] -= subs[k]
+                # print(f"Updated weight of neuron: {l.w[j]}")
 
     def updateLRate(self):
         # TODO
@@ -281,7 +293,7 @@ class Network:
         loss = []
         for i in range(len(results)):
             # for one output/expected pair
-            print("OUTPUT: ", results[i][0], "EXPECTED: ", results[i][0])
+            # print("OUTPUT: ", results[i][0], "EXPECTED: ", results[i][0])
             for j in range(len(results[i][0])):
                 # for each bit in the ouput/expected pair
                 loss.append(Math.loss(results[i][0][j], results[i][1][j]))
