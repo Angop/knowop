@@ -228,6 +228,7 @@ class Network:
 
     def backProp(self, output, expected):
         dan1s = []
+        dbns = []
         for i in range(len(self.layers) - 1, 0, -1):
             # print("\n\nLAYER ", i)
             # for each layer
@@ -250,6 +251,7 @@ class Network:
 
             # dbn = dzn
             dbn = dzn
+            dbns.append(dbn)
              
             # dan-1 = WTn * dzn
             wtn = Math.transpose(l.w)
@@ -260,6 +262,8 @@ class Network:
 
             # Save the gradient
         self.updateWeights(dan1s)
+        self.updateBiases(dbns)
+        # print(f"DANNIES: {dan1s}")
 
     def updateWeights(self, gradients):
         """
@@ -280,6 +284,28 @@ class Network:
                 for k in range(len(l.w[j])):
                     l.w[j][k] -= subs[k]
                 # print(f"Updated weight of neuron: {l.w[j]}")
+
+    def updateBiases(self, gradients):
+        """
+        """
+        # print("BIASGRADIENTS: ", gradients)
+        # print("BIASES: ", self.layers[0].b)
+        # reverse gradients list
+        gradients.reverse()
+        # print(f"\nUpdating parameters: {gradients}")
+        for i in range(len(self.layers) - 1, 0, -1):
+            l = self.layers[i]
+            # Calulate lr * dan1
+            dbn = gradients[i - 1]
+            lr = self.learningRate
+            # subs = [x * lr for x in dbn]
+            sub = lr * dbn
+            # print(f"Subs: {subs}")
+            for j in range(len(l.b)):
+                # print(f"Weight of neuron: {l.b[j]}")
+                # Substract subs from weight of neuron
+                l.b[j] -= sub
+                # print(f"Updated weight of neuron: {l.b[j]}")
 
     def updateLRate(self, count):
         """
