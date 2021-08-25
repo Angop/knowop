@@ -197,7 +197,7 @@ class Network:
         """
         Trains the model given a training set
         """
-        for _ in range(1000):
+        for count in range(1000):
             # Get a random batch of inputs from training set
             batch = [(x, trainSet[x]) for x in random.sample(list(trainSet),
                 self.batchSize)]
@@ -208,6 +208,7 @@ class Network:
                 # print cost of iteration
             # Backpropagate the error
             self.backPropBatch(res)
+            self.updateLRate(count)
 
     def forwardProp(self, input):
         """
@@ -224,7 +225,6 @@ class Network:
         for output, expected in results:
             self.backProp(output, expected)
         
-        self.updateLRate()
 
     def backProp(self, output, expected):
         dan1s = []
@@ -281,9 +281,13 @@ class Network:
                     l.w[j][k] -= subs[k]
                 # print(f"Updated weight of neuron: {l.w[j]}")
 
-    def updateLRate(self):
-        # TODO
-        pass
+    def updateLRate(self, count):
+        """
+        """
+        baseRate = 0.9
+        mult = 0.008
+        mini = 0.01
+        self.learningRate = baseRate * math.exp(-mult * count) + mini
 
 
     def getCost(self, results):
