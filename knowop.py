@@ -220,7 +220,7 @@ class Network:
 
     def backPropBatch(self, results):
         cost = self.getCost(results)
-        print("COST: ", cost)
+        print(f"COST: {cost} LEARNING RATE: {self.learningRate}")
 
         for output, expected in results:
             self.backProp(output, expected)
