@@ -170,7 +170,7 @@ class Network:
     def __init__(self, i_size: int, o_size: int):
         #Hyperparameters
         self.batchSize = 100
-        self.learningRate = 0.9
+        self.learningRate = 0.1
 
         self.i_size = i_size
         self.o_size = o_size
@@ -197,7 +197,7 @@ class Network:
         """
         Trains the model given a training set
         """
-        for count in range(10000):
+        for count in range(1000):
             # Get a random batch of inputs from training set
             batch = [(x, trainSet[x]) for x in random.sample(list(trainSet),
                 self.batchSize)]
@@ -237,8 +237,8 @@ class Network:
         
         avgWeights = avgWeightArrs(weightGrads)
         avgBiases = avgBiasArrs(biasGrads)
-        # print(f"AVG WEIGHT GRADS: {avgWeights}")
-        # print(f"AVG BIAS GRADS: {avgBiases}")
+        print(f"AVG WEIGHT GRADS: {avgWeights}")
+        print(f"AVG BIAS GRADS: {avgBiases}")
  
         self.updateWeights(avgWeights)
         self.updateBiases(avgBiases)
