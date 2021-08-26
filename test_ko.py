@@ -70,7 +70,7 @@ class TestKnowOp(unittest.TestCase):
 
 
 
-    # def test_full(self):
+    # def test_full_addition(self):
     #     random.seed(0)
     #     f = lambda x, y: x + y  # operation to learn
     #     n_args = 2              # arity of operation
@@ -86,3 +86,45 @@ class TestKnowOp(unittest.TestCase):
     #     # print("Train Size:", len(train_set), "Test Size:", len(test_set))
 
     #     network = train_network(train_set, n_args * n_bits, n_bits)
+
+    # def test_full_identity_two_input(self):
+    #     # given x, y just returns x
+    #     random.seed(0)
+    #     f = lambda x, y: x      # operation to learn
+    #     n_args = 2              # arity of operation
+    #     n_bits = 8              # size of each operand
+
+    #     samples = create_samples(f, n_args, n_bits)
+    #     train_pct = 0.95
+    #     train_set = {inputs: samples[inputs]
+    #                for inputs in random.sample(list(samples),
+    #                                            k=int(len(samples) * train_pct))}
+    #     test_set = {inputs: samples[inputs]
+    #                for inputs in samples if inputs not in train_set}
+    #     # print("Train Size:", len(train_set), "Test Size:", len(test_set))
+
+    #     network = train_network(train_set, n_args * n_bits, n_bits)
+
+    def test_full_identity(self):
+        # given x just returns x
+        random.seed(0)
+        f = lambda x: x  # operation to learn
+        n_args = 1              # arity of operation
+        n_bits = 8              # size of each operand
+
+        samples = create_samples(f, n_args, n_bits)
+        train_pct = 0.95
+        train_set = {inputs: samples[inputs]
+                   for inputs in random.sample(list(samples),
+                                               k=int(len(samples) * train_pct))}
+        test_set = {inputs: samples[inputs]
+                   for inputs in samples if inputs not in train_set}
+        # print("Train Size:", len(train_set), "Test Size:", len(test_set))
+
+        network = train_network(train_set, n_args * n_bits, n_bits)
+
+        # test the training
+        input, expected = (0, 0, 0, 1, 1, 0, 1, 1), (0, 0, 0, 1, 1, 0, 1, 1)
+        output = network.forwardProp(input)
+
+        self.assertEqual(tuple([round(x) for x in output]), expected)

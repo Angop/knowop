@@ -138,6 +138,7 @@ class Layer:  # do not modify class
         self.z = [Math.dot(self.w[i], inputs) + self.b[i]
                    for i in range(len(self.w))]
         self.a = [self.g(real) for real in self.z]
+        print(self.a)
         return tuple(self.a)
 
 
@@ -225,7 +226,7 @@ class Network:
 
     def backPropBatch(self, results):
         cost = self.getCost(results)
-        # print(f"COST: {cost} LEARNING RATE: {self.learningRate}")
+        print(f"COST: {cost} LEARNING RATE: {self.learningRate}")
 
         for output, expected in results:
             self.backProp(output, expected)
@@ -319,6 +320,11 @@ class Network:
     def updateLRate(self, count):
         """
         """
+        # TODO: START LOWER. FROM DANIEL:
+        """You probably won't want the learning rate to start above 0.1 - maybe
+        even less than that. With a good learning rate decay on each iteration,
+        you can have a very low learning rate (e.g. 1e-5) to be the terminating
+        condition for training."""
         baseRate = 0.9
         mult = 0.008
         mini = 0.01
