@@ -189,7 +189,7 @@ class Network:
         layers.append(Layer((avgSize, self.i_size), False))
 
         # output layer
-        layers.append(Layer((self.o_size, avgSize), True))
+        layers.append(Layer((self.o_size, 0), True))
 
         return layers
 
@@ -232,10 +232,11 @@ class Network:
         for output, expected in results:
             dwns, dbns = self.backProp(output, expected)
             weightGrads.append(dwns)
-            biasGrads.append(dwns)
+            biasGrads.append(dbns)
+            # print(self.layers[0].a)
         
-        avgWeights = avgArrs(weightGrads)
-        avgBiases = avgArrs(biasGrads)
+        avgWeights = avgWeightArrs(weightGrads)
+        avgBiases = avgBiasArrs(biasGrads)
         print(f"AVG WEIGHT GRADS: {avgWeights}")
         print(f"AVG BIAS GRADS: {avgBiases}")
 # 
@@ -399,7 +400,7 @@ def main() -> None:
     #     print("BITACT:", bits)
     #     print("BITEXP:", samples[inputs], end="\n\n")
 
-def avgArrs(arrs):
+def avgWeightArrs(arrs):
     """
     """
     avged = []
@@ -412,6 +413,18 @@ def avgArrs(arrs):
         avged.append(sum(temp) / len(temp))
     return avged
 
+def avgBiasArrs(arrs):
+    """
+    """
+    avged = []
+    for j in range(len(arrs[0])):
+        # for each element in the list
+        temp = []
+        for i in range(len(arrs)):
+            # for each list
+            temp.append(arrs[i][j])
+        avged.append(sum(temp) / len(temp))
+    return avged
 
 if __name__ == "__main__":
     main()
