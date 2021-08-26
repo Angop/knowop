@@ -51,18 +51,18 @@ class TestKnowOp(unittest.TestCase):
 
         # print(net.layers[0])
 
-    def test_backProp(self):
-        net = Network(16, 8)
+    # def test_backProp(self):
+    #     net = Network(16, 8)
 
-        f = lambda x, y: x + y  # operation to learn
-        n_args = 2              # arity of operation
-        n_bits = 8              # size of each operand
-        samples = create_samples(f, n_args, n_bits)
-        train_pct = 0.95
-        train_set = {inputs: samples[inputs]
-                   for inputs in random.sample(list(samples),
-                                               k=int(len(samples) * train_pct))}
-        net.train(train_set)
+    #     f = lambda x, y: x + y  # operation to learn
+    #     n_args = 2              # arity of operation
+    #     n_bits = 8              # size of each operand
+    #     samples = create_samples(f, n_args, n_bits)
+    #     train_pct = 0.95
+    #     train_set = {inputs: samples[inputs]
+    #                for inputs in random.sample(list(samples),
+    #                                            k=int(len(samples) * train_pct))}
+    #     net.train(train_set)
     
     # def test_getCost(self):
     #     # TODO
@@ -128,3 +128,8 @@ class TestKnowOp(unittest.TestCase):
         output = network.forwardProp(input)
 
         self.assertEqual(tuple([round(x) for x in output]), expected)
+
+    def test_avgarrs(self):
+        test = [[[[0]], [[3]]], [[[1]], [[6]]], [[[2]], [[9]]]]
+
+        self.assertEqual(avgArrs(test), [1, 6])

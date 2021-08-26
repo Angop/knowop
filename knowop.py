@@ -225,10 +225,22 @@ class Network:
 
     def backPropBatch(self, results):
         cost = self.getCost(results)
-        print(f"COST: {cost} LEARNING RATE: {self.learningRate}")
+        # print(f"COST: {cost} LEARNING RATE: {self.learningRate}")
 
+        weightGrads = []
+        biasGrads = []
         for output, expected in results:
-            self.backProp(output, expected)
+            dwns, dbns = self.backProp(output, expected)
+            weightGrads.append(dwns)
+            biasGrads.append(dwns)
+        
+        avgWeights = avgArrs(weightGrads)
+        avgBiases = avgArrs(biasGrads)
+        print(f"AVG WEIGHT GRADS: {avgWeights}")
+        print(f"AVG BIAS GRADS: {avgBiases}")
+# 
+        self.updateWeights(avgWeights)
+        self.updateBiases(avgBiases)
         
     def backProp(self, output, expected):
         dwns = []
@@ -255,7 +267,7 @@ class Network:
             # print(f"dzn: {dzn}")
 
             # dWn = dzn * aTn-1
-            print(f"Layer {i-1}: {self.layers[i - 1].a}")
+            # print(f"Layer {i-1}: {self.layers[i - 1].a}")
             atn1 = Math.transpose([self.layers[i - 1].a])
             # print(f"atn1: {atn1}")
             dwn = Math.matmul([[dzn]], atn1)
@@ -274,8 +286,7 @@ class Network:
             dan = [x[0] for x in dan]
 
             # Save the gradient
-        self.updateWeights(dwns)
-        self.updateBiases(dbns)
+        return dwns, dbns
 
     def updateWeights(self, gradients):
         """
@@ -289,7 +300,8 @@ class Network:
             l = self.layers[i]
             # Calulate lr * dan1
             lr = self.learningRate
-            subs = lr * gradients[i - 1][0][0]
+            print("GRADIENTS: ", gradients)
+            subs = lr * gradients[i - 1]
             print(f"Subs: {subs}")
             for j in range(len(l.w)):
                 for k in range(len(l.w[j])):
@@ -386,6 +398,20 @@ def main() -> None:
     #     print("OUTPUT:", output)
     #     print("BITACT:", bits)
     #     print("BITEXP:", samples[inputs], end="\n\n")
+
+def avgArrs(arrs):
+    """
+    """
+    avged = []
+    for j in range(len(arrs[0])):
+        # for each element in the list
+        temp = []
+        for i in range(len(arrs)):
+            # for each list
+            temp.append(arrs[i][j][0][0])
+        avged.append(sum(temp) / len(temp))
+    return avged
+
 
 if __name__ == "__main__":
     main()
