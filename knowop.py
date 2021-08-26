@@ -138,7 +138,6 @@ class Layer:  # do not modify class
         self.z = [Math.dot(self.w[i], inputs) + self.b[i]
                    for i in range(len(self.w))]
         self.a = [self.g(real) for real in self.z]
-        print(self.a)
         return tuple(self.a)
 
 
@@ -170,7 +169,7 @@ class Network:
 
     def __init__(self, i_size: int, o_size: int):
         #Hyperparameters
-        self.batchSize = 10
+        self.batchSize = 100
         self.learningRate = 0.9
 
         self.i_size = i_size
@@ -198,7 +197,7 @@ class Network:
         """
         Trains the model given a training set
         """
-        for count in range(1000):
+        for count in range(10000):
             # Get a random batch of inputs from training set
             batch = [(x, trainSet[x]) for x in random.sample(list(trainSet),
                 self.batchSize)]
@@ -256,7 +255,7 @@ class Network:
             # print(f"dzn: {dzn}")
 
             # dWn = dzn * aTn-1
-            # print(f"Layer {i}: {self.layers[i - 1].a}")
+            print(f"Layer {i-1}: {self.layers[i - 1].a}")
             atn1 = Math.transpose([self.layers[i - 1].a])
             # print(f"atn1: {atn1}")
             dwn = Math.matmul([[dzn]], atn1)
@@ -291,7 +290,7 @@ class Network:
             # Calulate lr * dan1
             lr = self.learningRate
             subs = lr * gradients[i - 1][0][0]
-            # print(f"Subs: {subs}")
+            print(f"Subs: {subs}")
             for j in range(len(l.w)):
                 for k in range(len(l.w[j])):
                     l.w[j][k] -= subs
@@ -325,11 +324,13 @@ class Network:
         even less than that. With a good learning rate decay on each iteration,
         you can have a very low learning rate (e.g. 1e-5) to be the terminating
         condition for training."""
-        baseRate = 0.9
-        mult = 0.008
-        mini = 0.01
-        self.learningRate = baseRate * math.exp(-mult * count) + mini
-
+        baseRate = 0.1
+        mult = 0.00001
+        mini = 1e-5
+        lRate =  -mult * count + baseRate
+        if lRate < mini:
+            self.learningRate = mini
+        self.learningRate = lRate
 
     def getCost(self, results):
         """
