@@ -198,7 +198,7 @@ class Network:
         Trains the model given a training set
         """
         # print("DEF TRAIN:",trainSet)
-        for count in range(100):
+        for count in range(1000):
             # Get a random batch of inputs from training set
             batch = [(x, trainSet[x]) for x in random.sample(list(trainSet),
                 self.batchSize)]
