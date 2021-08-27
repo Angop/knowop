@@ -437,7 +437,7 @@ def avgBiasArrs(arrs):
         avged.append(sum(temp) / len(temp))
     return avged
 
-def hadamard(arr1, arr2):
+def hadamard(arr1: List[float], arr2: List[float]) -> List[float]:
     """
     Performs hadamard multiplication
     """
