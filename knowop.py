@@ -197,20 +197,21 @@ class Network:
         """
         Trains the model given a training set
         """
+        print("DEF TRAIN:",trainSet)
         for count in range(1000):
             # Get a random batch of inputs from training set
             batch = [(x, trainSet[x]) for x in random.sample(list(trainSet),
                 self.batchSize)]
             # Run each input through the network
             res = []
-            for input, expected in batch:
-                res.append((self.forwardProp(input), expected, input))
+            for inpt, expected in batch:
+                res.append((self.forwardProp(inpt), expected, inpt))
                 # print cost of iteration
             # Backpropagate the error
             self.backPropBatch(res)
             self.updateLRate(count)
 
-    def forwardProp(self, input):
+    def forwardProp(self, inpt: List[int]):
         """
         Propogates the input through the input and returns the output
         """
@@ -218,19 +219,19 @@ class Network:
         for layer in self.layers:
             # print(f"Layer {i}")
             # print(f"initial: {layer.a}")
-            input = layer.activate(input)
+            inpt = layer.activate(inpt)
             # print(f"layer a: {layer.a}")
             i += 1
-        return input
+        return inpt
 
-    def backPropBatch(self, results):
+    def backPropBatch(self, results: List[List[float]]):
         cost = self.getCost(results)
         print(f"COST: {cost} LEARNING RATE: {self.learningRate}")
 
         weightGrads = []
         biasGrads = []
-        for output, expected, input in results:
-            dwns, dbns = self.backProp(output, expected, input)
+        for output, expected, inpt in results:
+            dwns, dbns = self.backProp(output, expected, inpt)
             weightGrads.append(dwns)
             biasGrads.append(dbns)
             # print(self.layers[0].a)
@@ -243,7 +244,8 @@ class Network:
         self.updateWeights(avgWeights)
         self.updateBiases(avgBiases)
         
-    def backProp(self, output, expected, input):
+    def backProp(self, output: List[float], expected: List[int],
+        inpt: List[int]):
         dwns = []
         dbns = []
         # Initialize da to the derivative of the loss function
@@ -270,8 +272,8 @@ class Network:
             # dWn = dzn * aTn-1
             # print(f"Layer {i-1}: {self.layers[i - 1].a}")
             if i == 0:
-                # print(f"INPUT: {input}")
-                atn1 = Math.transpose([list(input)])
+                # print(f"INPUT: {inpt}")
+                atn1 = Math.transpose([list(inpt)])
             else:
                 atn1 = Math.transpose([self.layers[i - 1].a])
             # print(f"atn1: {atn1}")
@@ -293,7 +295,7 @@ class Network:
             # Save the gradient
         return dwns, dbns
 
-    def updateWeights(self, gradients):
+    def updateWeights(self, gradients: List[float]):
         """
         """
         # print("updating")
@@ -316,8 +318,9 @@ class Network:
                     # for each weight in the neuron
                     l.w[j][k] -= subs
 
-    def updateBiases(self, gradients):
+    def updateBiases(self, gradients: List[float]):
         """
+        Using the gradient, update the biases
         """
         # print("BIASGRADIENTS: ", gradients)
         # print("BIASES: ", self.layers[0].b)
@@ -339,23 +342,19 @@ class Network:
                 l.b[j] -= sub
                 # print(f"Updated weight of neuron: {l.b[j]}")
 
-    def updateLRate(self, count):
+    def updateLRate(self, count: int):
         """
+        Update the learning rate given the number of iterations "count"
         """
-        # TODO: START LOWER. FROM DANIEL:
-        """You probably won't want the learning rate to start above 0.1 - maybe
-        even less than that. With a good learning rate decay on each iteration,
-        you can have a very low learning rate (e.g. 1e-5) to be the terminating
-        condition for training."""
         baseRate = 0.1
         mult = 0.00001
         mini = 1e-5
-        lRate =  -mult * count + baseRate
+        lRate = - mult * count + baseRate
         if lRate < mini:
             self.learningRate = mini
         self.learningRate = lRate
 
-    def getCost(self, results):
+    def getCost(self, results: List[List[float]]):
         """
         Reurns the cost, which is the average of each loss
         """
@@ -387,30 +386,31 @@ def train_network(samples: Dict[Tuple[int, ...], Tuple[int, ...]],
     # Return trained network
     return network
 
-def main() -> None:
-    random.seed(0)
-    f = lambda x, y: x + y  # operation to learn
-    n_args = 2              # arity of operation
-    n_bits = 8              # size of each operand
+# def main() -> None:
+#     random.seed(0)
+#     f = lambda x, y: x + y  # operation to learn
+#     n_args = 2              # arity of operation
+#     n_bits = 8              # size of each operand
 
-    samples = create_samples(f, n_args, n_bits)
-    train_pct = 0.95
-    train_set = {inputs: samples[inputs]
-               for inputs in random.sample(list(samples),
-                                           k=int(len(samples) * train_pct))}
-    test_set = {inputs: samples[inputs]
-               for inputs in samples if inputs not in train_set}
-    print("Train Size:", len(train_set), "Test Size:", len(test_set))
+#     samples = create_samples(f, n_args, n_bits)
+#     train_pct = 0.95
+#     train_set = {inputs: samples[inputs]
+#                for inputs in random.sample(list(samples),
+#                                            k=int(len(samples) * train_pct))}
+#     test_set = {inputs: samples[inputs]
+#                for inputs in samples if inputs not in train_set}
+#     print("Train Size:", len(train_set), "Test Size:", len(test_set))
 
-    network = train_network(train_set, n_args * n_bits, n_bits)
-    # for inputs in test_set:
-    #     output = tuple(round(n, 2) for n in propagate_forward(network, inputs))
-    #     bits = tuple(round(n) for n in output)
-    #     print("OUTPUT:", output)
-    #     print("BITACT:", bits)
-    #     print("BITEXP:", samples[inputs], end="\n\n")
+#     network = train_network(train_set, n_args * n_bits, n_bits)
+#     # for inputs in test_set:
+#     #     output = tuple(round(n, 2) for n in propagate_forward(network, input
+# s))
+#     #     bits = tuple(round(n) for n in output)
+#     #     print("OUTPUT:", output)
+#     #     print("BITACT:", bits)
+#     #     print("BITEXP:", samples[inputs], end="\n\n")
 
-def avgWeightArrs(arrs):
+def avgWeightArrs(arrs: List[List[List[List[float]]]]):
     """
     """
     print("ARRS: ", arrs)
@@ -424,7 +424,7 @@ def avgWeightArrs(arrs):
         avged.append(sum(temp) / len(temp))
     return avged
 
-def avgBiasArrs(arrs):
+def avgBiasArrs(arrs: List[List[List[float]]]):
     """
     """
     avged = []
@@ -444,8 +444,8 @@ def hadamard(arr1: List[float], arr2: List[float]) -> List[float]:
     res = [0] * len(arr1)
 
     for i in range(len(arr1)):
-            res[i] = arr1[i] * arr2[i]
+        res[i] = arr1[i] * arr2[i]
     return res
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()
