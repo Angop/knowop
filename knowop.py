@@ -197,8 +197,8 @@ class Network:
         """
         Trains the model given a training set
         """
-        print("DEF TRAIN:",trainSet)
-        for count in range(1000):
+        # print("DEF TRAIN:",trainSet)
+        for count in range(100):
             # Get a random batch of inputs from training set
             batch = [(x, trainSet[x]) for x in random.sample(list(trainSet),
                 self.batchSize)]
@@ -238,8 +238,8 @@ class Network:
         
         avgWeights = avgWeightArrs(weightGrads)
         avgBiases = avgBiasArrs(biasGrads)
-        print(f"AVG WEIGHT GRADS: {avgWeights}")
-        print(f"AVG BIAS GRADS: {avgBiases}")
+        # print(f"AVG WEIGHT GRADS: {avgWeights}")
+        # print(f"AVG BIAS GRADS: {avgBiases}")
  
         self.updateWeights(avgWeights)
         self.updateBiases(avgBiases)
@@ -267,6 +267,7 @@ class Network:
             # print(f"dan: {dan}\n")
             # print(f"gnzn: {gnzn}\n")
             dzn = hadamard(gnzn, dan)
+            dzn = [[x] for x in dzn]
             # print(f"dzn: {dzn}\n")
 
             # dWn = dzn * aTn-1
@@ -277,7 +278,7 @@ class Network:
             else:
                 atn1 = Math.transpose([self.layers[i - 1].a])
             # print(f"atn1: {atn1}")
-            dwn = Math.matmul([dzn], atn1)
+            dwn = Math.matmul(dzn, atn1)
             # print(f"dwn: {dwn}")
             # Add to weight matrices list
             dwns.append(dwn)
@@ -288,7 +289,7 @@ class Network:
              
             # dan-1 = WTn * dzn
             wtn = Math.transpose(l.w)
-            dan = Math.matmul(wtn, [dzn])
+            dan = Math.matmul(wtn, dzn)
             # Turn dan to a 1d list
             dan = [x[0] for x in dan]
 
@@ -313,7 +314,7 @@ class Network:
                 # for each neuron
                 subs = lr * gradients[i] # TODO SHOULD BE J
                 # subs = lr * gradients[j] # TODO SHOULD BE J
-                print("GRADIENTS: ", gradients)
+                # print("GRADIENTS: ", gradients)
                 for k in range(len(l.w[j])):
                     # for each weight in the neuron
                     l.w[j][k] -= subs
@@ -386,22 +387,22 @@ def train_network(samples: Dict[Tuple[int, ...], Tuple[int, ...]],
     # Return trained network
     return network
 
-# def main() -> None:
-#     random.seed(0)
-#     f = lambda x, y: x + y  # operation to learn
-#     n_args = 2              # arity of operation
-#     n_bits = 8              # size of each operand
+def main() -> None:
+    random.seed(0)
+    f = lambda x, y: x + y  # operation to learn
+    n_args = 2              # arity of operation
+    n_bits = 8              # size of each operand
 
-#     samples = create_samples(f, n_args, n_bits)
-#     train_pct = 0.95
-#     train_set = {inputs: samples[inputs]
-#                for inputs in random.sample(list(samples),
-#                                            k=int(len(samples) * train_pct))}
-#     test_set = {inputs: samples[inputs]
-#                for inputs in samples if inputs not in train_set}
-#     print("Train Size:", len(train_set), "Test Size:", len(test_set))
+    samples = create_samples(f, n_args, n_bits)
+    train_pct = 0.95
+    train_set = {inputs: samples[inputs]
+               for inputs in random.sample(list(samples),
+                                           k=int(len(samples) * train_pct))}
+    test_set = {inputs: samples[inputs]
+               for inputs in samples if inputs not in train_set}
+    print("Train Size:", len(train_set), "Test Size:", len(test_set))
 
-#     network = train_network(train_set, n_args * n_bits, n_bits)
+    network = train_network(train_set, n_args * n_bits, n_bits)
 #     # for inputs in test_set:
 #     #     output = tuple(round(n, 2) for n in propagate_forward(network, input
 # s))
@@ -413,7 +414,7 @@ def train_network(samples: Dict[Tuple[int, ...], Tuple[int, ...]],
 def avgWeightArrs(arrs: List[List[List[List[float]]]]):
     """
     """
-    print("ARRS: ", arrs)
+    # print("ARRS: ", arrs)
     avged = []
     for j in range(len(arrs[0])):
         # for each element in the list
@@ -427,13 +428,14 @@ def avgWeightArrs(arrs: List[List[List[List[float]]]]):
 def avgBiasArrs(arrs: List[List[List[float]]]):
     """
     """
+    # print("ARRS: ", arrs)
     avged = []
     for j in range(len(arrs[0])):
         # for each element in the list
         temp = []
         for i in range(len(arrs)):
             # for each list
-            temp.append(arrs[i][j][0])
+            temp.append(arrs[i][j][0][0])
         avged.append(sum(temp) / len(temp))
     return avged
 
@@ -447,5 +449,5 @@ def hadamard(arr1: List[float], arr2: List[float]) -> List[float]:
         res[i] = arr1[i] * arr2[i]
     return res
 
-# if __name__ == "__main__":
-#     main()
+if __name__ == "__main__":
+    main()
