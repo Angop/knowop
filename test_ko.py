@@ -35,6 +35,8 @@ class TestKnowOp(unittest.TestCase):
         #     print("\n")
         #     i += 1
 
+        print(hadamard([1, 2, 3], [2, 2, 3]))
+
     
     # def test_forwardProp(self):
     #     net = Network(16, 8)

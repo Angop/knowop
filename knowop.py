@@ -262,10 +262,10 @@ class Network:
                 gnzn.append(Math.sigmoid_prime(l.z[n]) if l.g == Math.sigmoid
                     else Math.relu_prime(l.z[n]))
             
-            # print(f"dan: {dan}")
-            # print(f"gnzn: {gnzn}")
-            dzn = Math.dot(gnzn, dan)
-            # print(f"dzn: {dzn}")
+            # print(f"dan: {dan}\n")
+            # print(f"gnzn: {gnzn}\n")
+            dzn = hadamard(gnzn, dan)
+            # print(f"dzn: {dzn}\n")
 
             # dWn = dzn * aTn-1
             # print(f"Layer {i-1}: {self.layers[i - 1].a}")
@@ -275,7 +275,7 @@ class Network:
             else:
                 atn1 = Math.transpose([self.layers[i - 1].a])
             # print(f"atn1: {atn1}")
-            dwn = Math.matmul([[dzn]], atn1)
+            dwn = Math.matmul([dzn], atn1)
             # print(f"dwn: {dwn}")
             # Add to weight matrices list
             dwns.append(dwn)
@@ -286,7 +286,7 @@ class Network:
              
             # dan-1 = WTn * dzn
             wtn = Math.transpose(l.w)
-            dan = Math.matmul(wtn, [[dzn]])
+            dan = Math.matmul(wtn, [dzn])
             # Turn dan to a 1d list
             dan = [x[0] for x in dan]
 
@@ -306,11 +306,12 @@ class Network:
             l = self.layers[i]
             # Calulate lr * dan1
             lr = self.learningRate
-            # print("GRADIENTS: ", gradients)
-            subs = lr * gradients[i]
             # print(f"Subs: {subs}")
             for j in range(len(l.w)):
                 # for each neuron
+                subs = lr * gradients[i] # TODO SHOULD BE J
+                # subs = lr * gradients[j] # TODO SHOULD BE J
+                print("GRADIENTS: ", gradients)
                 for k in range(len(l.w[j])):
                     # for each weight in the neuron
                     l.w[j][k] -= subs
@@ -412,6 +413,7 @@ def main() -> None:
 def avgWeightArrs(arrs):
     """
     """
+    print("ARRS: ", arrs)
     avged = []
     for j in range(len(arrs[0])):
         # for each element in the list
@@ -431,9 +433,19 @@ def avgBiasArrs(arrs):
         temp = []
         for i in range(len(arrs)):
             # for each list
-            temp.append(arrs[i][j])
+            temp.append(arrs[i][j][0])
         avged.append(sum(temp) / len(temp))
     return avged
+
+def hadamard(arr1, arr2):
+    """
+    Performs hadamard multiplication
+    """
+    res = [0] * len(arr1)
+
+    for i in range(len(arr1)):
+            res[i] = arr1[i] * arr2[i]
+    return res
 
 if __name__ == "__main__":
     main()
