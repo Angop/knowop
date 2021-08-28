@@ -236,8 +236,8 @@ class Network:
             biasGrads.append(dbns)
             # print(self.layers[0].a)
         
-        avgWeights = avgWeightArrs(weightGrads)
-        avgBiases = avgWeightArrs(biasGrads)
+        avgWeights = self.avgWeightArrs(weightGrads)
+        avgBiases = self.avgWeightArrs(biasGrads)
         # print(f"AVG WEIGHT GRADS: {avgWeights}")
         # print(f"AVG BIAS GRADS: {avgBiases}")
  
@@ -303,19 +303,19 @@ class Network:
         # print("updating")
         # print(f"dwn: {gradients}")
         # reverse gradients list
-        # gradients.reverse()
+        gradients.reverse()
         # print(f"\nUpdating parameters: {gradients}")
         for i in range(len(self.layers) - 1, -1, -1):
             # for each layer
             l = self.layers[i]
             # Calulate lr * dan1
+            grad = gradients[i]
             lr = self.learningRate
             # print(f"Subs: {subs}")
             for j in range(len(l.w)):
                 # for each neuron
-                subs = lr * gradients[j] # TODO SHOULD BE J
-                # subs = lr * gradients[j] # TODO SHOULD BE J
-                # print("GRADIENTS: ", gradients)
+                subs = lr * grad[j]
+                # print("GRADIENTS: ", grad)
                 for k in range(len(l.w[j])):
                     # for each weight in the neuron
                     l.w[j][k] -= subs
@@ -333,11 +333,12 @@ class Network:
             # for each layer
             l = self.layers[i]
             # Calulate lr * dan1
+            grad = gradients[i]
             lr = self.learningRate
             
             # print(f"Subs: {sub}")
             for j in range(len(l.b)):
-                dbn = gradients[j]
+                dbn = grad[j]
                 sub = lr * dbn
                 # for each neuron
                 # print(f"Weight of neuron: {l.b[j]}")
@@ -371,6 +372,28 @@ class Network:
 
         return sum(loss) / len(loss)
 
+    def avgWeightArrs(self, arrs):
+        """
+        """
+        # print("ARRS: ", arrs)
+        avged = []
+        for k in range(len(self.layers)):
+            # for each layer
+            ltemp = []
+
+            for j in range(len(arrs[0][k])):
+                # for each element in the list
+                ntemp = []
+
+                for i in range(len(arrs)):
+                    # for each list
+                    ntemp.append(arrs[i][k][j][0])
+                    # print(f"AVG: {avged} i:{i} k:{k} j:{j} LTEMP: {ltemp}")
+                ltemp.append(sum(ntemp) / len(ntemp))
+                # print(f"\nNTEMP: {ntemp} LTEMP: {ltemp}\n")
+            avged.append(ltemp)
+            # print(f"AVG: {avged} k:{k} j:{j} i:{i}")
+        return avged
 
 
 
@@ -422,20 +445,7 @@ def main() -> None:
     # print(f"INPUT: {input}")
     print(f"EXPECTED: {expected}")
 
-def avgWeightArrs(arrs: List[List[List[List[float]]]]):
-    """
-    """
-    # print("ARRS: ", arrs)
-    avged = []
-    for j in range(len(arrs[0][0])):
-        # for each element in the list
-        temp = []
-        for i in range(len(arrs)):
-            # for each list
-            temp.append(arrs[i][0][j][0])
-        avged.append(sum(temp) / len(temp))
-    # print(f"\n Avgd: {avged}\n")
-    return avged
+
 
 # def avgBiasArrs(arrs: List[List[List[float]]]):
 #     """
