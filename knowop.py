@@ -198,7 +198,7 @@ class Network:
         Trains the model given a training set
         """
         # print("DEF TRAIN:",trainSet)
-        for count in range(100):
+        for count in range(1000):
             # Get a random batch of inputs from training set
             batch = [(x, trainSet[x]) for x in random.sample(list(trainSet),
                 self.batchSize)]
@@ -298,11 +298,12 @@ class Network:
 
     def updateWeights(self, gradients: List[float]):
         """
+        # TODO works only for 1 layer
         """
         # print("updating")
         # print(f"dwn: {gradients}")
         # reverse gradients list
-        gradients.reverse()
+        # gradients.reverse()
         # print(f"\nUpdating parameters: {gradients}")
         for i in range(len(self.layers) - 1, -1, -1):
             # for each layer
@@ -326,7 +327,7 @@ class Network:
         # print("BIASGRADIENTS: ", gradients)
         # print("BIASES: ", self.layers[0].b)
         # reverse gradients list
-        gradients.reverse()
+        # gradients.reverse()
         # print(f"\nUpdating parameters: {gradients}")
         for i in range(len(self.layers) - 1, -1, -1):
             # for each layer
@@ -406,13 +407,20 @@ def main() -> None:
     print("Train Size:", len(train_set), "Test Size:", len(test_set))
 
     network = train_network(train_set, n_args * n_bits, n_bits)
-#     # for inputs in test_set:
-#     #     output = tuple(round(n, 2) for n in propagate_forward(network, input
+    # for inputs in test_set:
+        # output = tuple(round(n, 2) for n in propagate_forward(network, input
 # s))
 #     #     bits = tuple(round(n) for n in output)
 #     #     print("OUTPUT:", output)
 #     #     print("BITACT:", bits)
 #     #     print("BITEXP:", samples[inputs], end="\n\n")
+    input, expected = (1, 0, 1, 1, 1, 0, 1, 1), (1, 0, 1, 1, 1, 0, 1, 1)
+    output = network.forwardProp(input)
+    print(f"ACTUAL - No round: {output}")
+    output = tuple([round(x) for x in output])
+    print(f"ACTUAL: {output}")
+    # print(f"INPUT: {input}")
+    print(f"EXPECTED: {expected}")
 
 def avgWeightArrs(arrs: List[List[List[List[float]]]]):
     """
