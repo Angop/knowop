@@ -360,12 +360,12 @@ class Network:
 
     def getCost(self, results: List[List[float]]):
         """
-        Reurns the cost, which is the average of each loss
+        Returns the cost, which is the average of each loss
         """
         loss = []
         for i in range(len(results)):
             # for one output/expected pair
-            # print("OUTPUT: ", results[i][0], "EXPECTED: ", results[i][0])
+            print("OUTPUT: ", results[i][0], "EXPECTED: ", results[i][0])
             for j in range(len(results[i][0])):
                 # for each bit in the ouput/expected pair
                 loss.append(Math.loss(results[i][0][j], results[i][1][j]))
