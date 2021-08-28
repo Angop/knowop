@@ -198,7 +198,7 @@ class Network:
         Trains the model given a training set
         """
         # print("DEF TRAIN:",trainSet)
-        for count in range(1000):
+        for count in range(100):
             # Get a random batch of inputs from training set
             batch = [(x, trainSet[x]) for x in random.sample(list(trainSet),
                 self.batchSize)]
@@ -350,7 +350,7 @@ class Network:
         Update the learning rate given the number of iterations "count"
         """
         baseRate = 0.1
-        mult = 0.00001
+        mult = 0.001
         mini = 1e-5
         lRate = - mult * count + baseRate
         if lRate < mini:
