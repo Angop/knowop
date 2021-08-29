@@ -211,7 +211,7 @@ class Network:
             self.backPropBatch(res)
             self.updateLRate(count)
 
-    def forwardProp(self, inpt: List[int]):
+    def forwardProp(self, inpt: Tuple[int, ...]) -> Tuple[int, ...]:
         """
         Propogates the input through the input and returns the output
         """
