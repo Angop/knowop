@@ -399,7 +399,7 @@ class Network:
 
 
 def train_network(samples: Dict[Tuple[int, ...], Tuple[int, ...]],
-                  i_size: int, o_size: int) -> List[Layer]:
+                  i_size: int, o_size: int) -> Network:
     """
     Given a training set (with labels) and the sizes of the input and output
     layers, create and train a network by iteratively propagating inputs
@@ -438,8 +438,9 @@ def main() -> None:
 #     #     print("OUTPUT:", output)
 #     #     print("BITACT:", bits)
 #     #     print("BITEXP:", samples[inputs], end="\n\n")
-    input, expected = (1, 0, 1, 1, 1, 0, 1, 1), (1, 0, 1, 1, 1, 0, 1, 1)
-    output = network.forwardProp(input)
+    inputi, expected = (1, 0, 1, 1, 1, 0, 1, 1), (1, 0, 1, 1, 1, 0, 1, 1)
+    
+    output = network.forwardProp(inputi)
     print(f"ACTUAL - No round: {output}")
     output = tuple([round(x) for x in output])
     print(f"ACTUAL: {output}")
@@ -466,7 +467,7 @@ def hadamard(arr1: List[float], arr2: List[float]) -> List[float]:
     """
     Performs hadamard multiplication
     """
-    res = [0] * len(arr1)
+    res = [0.0] * len(arr1)
 
     for i in range(len(arr1)):
         res[i] = arr1[i] * arr2[i]
