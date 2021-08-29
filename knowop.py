@@ -225,7 +225,7 @@ class Network:
         return inpt
 
     def backPropBatch(self, results: List[List[float]]):
-        cost = self.getCost(results)
+        # cost = self.getCost(results)
         # print(f"COST: {cost} LEARNING RATE: {self.learningRate}")
 
         weightGrads = []
@@ -261,7 +261,7 @@ class Network:
         
             for n in range(len(l.z)):
                 # for each neuron
-                gnzn.append(Math.sigmoid_prime(l.z[n]) if l.g == Math.sigmoid
+                gnzn.append(Math.sigmoid_prime(l.z[n]) if l.g is Math.sigmoid
                     else Math.relu_prime(l.z[n]))
             
             # print(f"dan: {dan}\n")
@@ -374,6 +374,7 @@ class Network:
 
     def avgWeightArrs(self, arrs):
         """
+        Get average of a list of weight arrays
         """
         # print("ARRS: ", arrs)
         avged = []
