@@ -226,7 +226,7 @@ class Network:
 
     def backPropBatch(self, results: List[List[float]]):
         cost = self.getCost(results)
-        print(f"COST: {cost} LEARNING RATE: {self.learningRate}")
+        # print(f"COST: {cost} LEARNING RATE: {self.learningRate}")
 
         weightGrads = []
         biasGrads = []
@@ -365,7 +365,7 @@ class Network:
         loss = []
         for i in range(len(results)):
             # for one output/expected pair
-            print("OUTPUT: ", results[i][0], "EXPECTED: ", results[i][0])
+            # print("OUTPUT: ", results[i][0], "EXPECTED: ", results[i][0])
             for j in range(len(results[i][0])):
                 # for each bit in the ouput/expected pair
                 loss.append(Math.loss(results[i][0][j], results[i][1][j]))
