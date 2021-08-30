@@ -185,12 +185,12 @@ class Network:
         # layers.append(Layer((self.i_size, 0), False))
 
         # # one hidden layer
-        avgSize = (self.i_size + self.o_size) // 2
-        layers.append(Layer((avgSize, self.i_size), False))
-        layers.append(Layer((self.o_size, avgSize), True))
+        # avgSize = (self.i_size + self.o_size) // 2
+        # layers.append(Layer((avgSize, self.i_size), False))
+        # layers.append(Layer((self.o_size, avgSize), True))
 
         # ONLY ONE LAYER
-        # layers.append(Layer((self.o_size, self.i_size), True))
+        layers.append(Layer((self.o_size, self.i_size), True))
 
         return layers
 
@@ -228,7 +228,6 @@ class Network:
     def backPropBatch(self, results: List[List[float]]):
         cost = self.getCost(results)
         print(f"COST: {cost} LEARNING RATE: {self.learningRate}")
-
         weightGrads = []
         biasGrads = []
         for output, expected, inpt in results:
@@ -236,12 +235,12 @@ class Network:
             weightGrads.append(dwns)
             biasGrads.append(dbns)
             # print(self.layers[0].a)
-        
+        # print(weightGrads)
         avgWeights = self.avgWeightArrs(weightGrads)
         avgBiases = self.avgWeightArrs(biasGrads)
         # print(f"AVG WEIGHT GRADS: {avgWeights}")
         # print(f"AVG BIAS GRADS: {avgBiases}")
- 
+
         self.updateWeights(avgWeights)
         self.updateBiases(avgBiases)
         
@@ -286,6 +285,7 @@ class Network:
 
             # dbn = dzn
             dbn = dzn
+            # print(f"dbn: {dbn}")
             dbns.append(dbn)
              
             # dan-1 = WTn * dzn
@@ -304,7 +304,8 @@ class Network:
         # print("updating")
         # print(f"dwn: {gradients}")
         # reverse gradients list
-        gradients.reverse()
+        # gradients[0].reverse()
+        # print(f"dwn: {gradients}")
         # print(f"\nUpdating parameters: {gradients}")
         for i in range(len(self.layers) - 1, -1, -1):
             # for each layer
@@ -431,9 +432,9 @@ def train_network(samples: Dict[Tuple[int, ...], Tuple[int, ...]],
 def main() -> None:
     random.seed(0)
     # f = lambda x, y: x + y  # operation to learn
-    f = lambda x: x
+    f = lambda x: 2 * x
     # n_args = 2              # arity of operation
-    n_args = 1
+    n_args = 1 
     n_bits = 8              # size of each operand
 
     samples = create_samples(f, n_args, n_bits)
@@ -444,6 +445,7 @@ def main() -> None:
     test_set = {inputs: samples[inputs]
                for inputs in samples if inputs not in train_set}
     print("Train Size:", len(train_set), "Test Size:", len(test_set))
+    print(train_set)
 
     network = train_network(train_set, n_args * n_bits, n_bits)
     for inputs in test_set:
