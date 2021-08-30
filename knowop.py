@@ -185,11 +185,12 @@ class Network:
         # layers.append(Layer((self.i_size, 0), False))
 
         # # one hidden layer
-        # avgSize = (self.i_size + self.o_size) // 2
-        # layers.append(Layer((avgSize, self.i_size), False))
+        avgSize = (self.i_size + self.o_size) // 2
+        layers.append(Layer((avgSize, self.i_size), False))
+        layers.append(Layer((self.o_size, avgSize), True))
 
-        # output layer
-        layers.append(Layer((self.o_size, self.i_size), True))
+        # ONLY ONE LAYER
+        # layers.append(Layer((self.o_size, self.i_size), True))
 
         return layers
 
@@ -225,8 +226,8 @@ class Network:
         return inpt
 
     def backPropBatch(self, results: List[List[float]]):
-        # cost = self.getCost(results)
-        # print(f"COST: {cost} LEARNING RATE: {self.learningRate}")
+        cost = self.getCost(results)
+        print(f"COST: {cost} LEARNING RATE: {self.learningRate}")
 
         weightGrads = []
         biasGrads = []
@@ -396,6 +397,20 @@ class Network:
             # print(f"AVG: {avged} k:{k} j:{j} i:{i}")
         return avged
 
+def propagate_forward(layers: List[Layer],
+ inpt: List[float]) -> List[List[float]]:
+    '''
+    Given trained layers, propagate an input forward
+    '''
+    i = 0
+    for layer in layers:
+        # print(f"Layer {i}")
+        # print(f"initial: {layer.a}")
+        inpt = layer.activate(inpt)
+        # print(f"layer a: {layer.a}")
+        i += 1
+    return inpt
+
 
 
 def train_network(samples: Dict[Tuple[int, ...], Tuple[int, ...]],
@@ -430,14 +445,13 @@ def main() -> None:
                for inputs in samples if inputs not in train_set}
     print("Train Size:", len(train_set), "Test Size:", len(test_set))
 
-    # network = train_network(train_set, n_args * n_bits, n_bits)
-    # for inputs in test_set:
-        # output = tuple(round(n, 2) for n in propagate_forward(network, input
-# s))
-#     #     bits = tuple(round(n) for n in output)
-#     #     print("OUTPUT:", output)
-#     #     print("BITACT:", bits)
-#     #     print("BITEXP:", samples[inputs], end="\n\n")
+    network = train_network(train_set, n_args * n_bits, n_bits)
+    for inputs in test_set:
+        output = tuple(round(n, 2) for n in propagate_forward(network, inputs))
+        bits = tuple(round(n) for n in output)
+        print("OUTPUT:", output)
+        print("BITACT:", bits)
+        print("BITEXP:", samples[inputs], end="\n\n")
     # inputi, expected = (1, 0, 1, 1, 1, 0, 1, 1), (1, 0, 1, 1, 1, 0, 1, 1)
     
     # output = network.forwardProp(inputi)
