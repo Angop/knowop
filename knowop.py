@@ -399,7 +399,7 @@ class Network:
 
 
 def train_network(samples: Dict[Tuple[int, ...], Tuple[int, ...]],
-                  i_size: int, o_size: int) -> Network:
+                  i_size: int, o_size: int) -> List[Layer]:
     """
     Given a training set (with labels) and the sizes of the input and output
     layers, create and train a network by iteratively propagating inputs
@@ -411,7 +411,7 @@ def train_network(samples: Dict[Tuple[int, ...], Tuple[int, ...]],
     # Train network
     network.train(samples)
     # Return trained network
-    return network
+    return network.layers
 
 def main() -> None:
     random.seed(0)
@@ -430,7 +430,7 @@ def main() -> None:
                for inputs in samples if inputs not in train_set}
     print("Train Size:", len(train_set), "Test Size:", len(test_set))
 
-    network = train_network(train_set, n_args * n_bits, n_bits)
+    # network = train_network(train_set, n_args * n_bits, n_bits)
     # for inputs in test_set:
         # output = tuple(round(n, 2) for n in propagate_forward(network, input
 # s))
@@ -438,14 +438,14 @@ def main() -> None:
 #     #     print("OUTPUT:", output)
 #     #     print("BITACT:", bits)
 #     #     print("BITEXP:", samples[inputs], end="\n\n")
-    inputi, expected = (1, 0, 1, 1, 1, 0, 1, 1), (1, 0, 1, 1, 1, 0, 1, 1)
+    # inputi, expected = (1, 0, 1, 1, 1, 0, 1, 1), (1, 0, 1, 1, 1, 0, 1, 1)
     
-    output = network.forwardProp(inputi)
-    print(f"ACTUAL - No round: {output}")
-    output = tuple([round(x) for x in output])
-    print(f"ACTUAL: {output}")
-    # print(f"INPUT: {input}")
-    print(f"EXPECTED: {expected}")
+    # output = network.forwardProp(inputi)
+    # print(f"ACTUAL - No round: {output}")
+    # output = tuple([round(x) for x in output])
+    # print(f"ACTUAL: {output}")
+    # # print(f"INPUT: {input}")
+    # print(f"EXPECTED: {expected}")
 
 
 
