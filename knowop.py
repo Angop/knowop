@@ -399,7 +399,7 @@ class Network:
         return avged
 
 def propagate_forward(layers: List[Layer],
- inpt: List[float]) -> List[List[float]]:
+ inpt: Tuple[float, ...]) -> List[List[float]]:
     '''
     Given trained layers, propagate an input forward
     '''
@@ -445,7 +445,7 @@ def main() -> None:
     test_set = {inputs: samples[inputs]
                for inputs in samples if inputs not in train_set}
     print("Train Size:", len(train_set), "Test Size:", len(test_set))
-    print(train_set)
+    # print(train_set)
 
     network = train_network(train_set, n_args * n_bits, n_bits)
     for inputs in test_set:
@@ -454,16 +454,6 @@ def main() -> None:
         print("OUTPUT:", output)
         print("BITACT:", bits)
         print("BITEXP:", samples[inputs], end="\n\n")
-    # inputi, expected = (1, 0, 1, 1, 1, 0, 1, 1), (1, 0, 1, 1, 1, 0, 1, 1)
-    
-    # output = network.forwardProp(inputi)
-    # print(f"ACTUAL - No round: {output}")
-    # output = tuple([round(x) for x in output])
-    # print(f"ACTUAL: {output}")
-    # # print(f"INPUT: {input}")
-    # print(f"EXPECTED: {expected}")
-
-
 
 # def avgBiasArrs(arrs: List[List[List[float]]]):
 #     """
