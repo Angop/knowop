@@ -211,6 +211,7 @@ class Network:
             # Backpropagate the error
             self.backPropBatch(res)
             self.updateLRate(count)
+        self.print_weights()
 
     def forwardProp(self, inpt: Tuple[int, ...]) -> Tuple[int, ...]:
         """
@@ -373,6 +374,10 @@ class Network:
                 loss.append(Math.loss(results[i][0][j], results[i][1][j]))
 
         return sum(loss) / len(loss)
+    
+    def print_weights(self):
+        for i in range(len(self.layers)):
+            print(f"Layer {i}: ", self.layers[i].w)
 
     def avgWeightArrs(self, arrs):
         """
@@ -432,7 +437,8 @@ def train_network(samples: Dict[Tuple[int, ...], Tuple[int, ...]],
 def main() -> None:
     random.seed(0)
     # f = lambda x, y: x + y  # operation to learn
-    f = lambda x: 2 * x
+    # f = lambda x: ~x
+    f = lambda x: x + 100
     # n_args = 2              # arity of operation
     n_args = 1 
     n_bits = 8              # size of each operand
