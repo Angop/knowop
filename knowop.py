@@ -399,7 +399,7 @@ class Network:
         return avged
 
 def propagate_forward(layers: List[Layer],
- inpt: Tuple[float, ...]) -> List[List[float]]:
+ inpt: Tuple[float, ...]) -> Tuple[float, ...]:
     '''
     Given trained layers, propagate an input forward
     '''
