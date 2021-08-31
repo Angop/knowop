@@ -192,7 +192,7 @@ class Network:
 
     def __init__(self, i_size: int, o_size: int):
         #Hyperparameters
-        self.batchSize = 100
+        self.batchSize = 10
         self.learningRate = 0.1
 
         self.i_size = i_size
@@ -216,6 +216,26 @@ class Network:
         # layers.append(Layer((self.o_size, self.i_size), True))
 
         return layers
+    
+    def train(self, trainSet):
+        """
+        Trains the model given a training set
+        """
+        # print("Trainset:", trainSet)
+        for count in range(1000):
+            # Get a random batch of inputs from training set
+            batch = [(x, trainSet[x]) for x in random.sample(list(trainSet),
+                self.batchSize)]
+            # print(f"Batch: {batch}")
+            # Run each input through the network
+            res = []
+            for inpt, expected in batch:
+                res.append((self.forwardProp(inpt), expected, inpt))
+                # print cost of iteration
+            # Backpropagate the error
+            self.backPropBatch(res)
+            self.updateLRate(count)
+        self.print_weights()
 
     def forwardProp(self, inpt: Tuple[int, ...]) -> Tuple[int, ...]:
         """
@@ -450,26 +470,6 @@ class Network:
             # print(f"AVG: {avged} k:{k} j:{j} i:{i}")
         return avged
     
-    def train(self, trainSet):
-        """
-        Trains the model given a training set
-        """
-        # print("Trainset:", trainSet)
-        for count in range(100):
-            # Get a random batch of inputs from training set
-            batch = [(x, trainSet[x]) for x in random.sample(list(trainSet),
-                self.batchSize)]
-            # print(f"Batch: {batch}")
-            # Run each input through the network
-            res = []
-            for inpt, expected in batch:
-                res.append((self.forwardProp(inpt), expected, inpt))
-                # print cost of iteration
-            # Backpropagate the error
-            self.backPropBatch(res)
-            self.updateLRate(count)
-        self.print_weights()
-
 def train_network(samples: Dict[Tuple[int, ...], Tuple[int, ...]],
                   i_size: int, o_size: int) -> List[Layer]:
     """
