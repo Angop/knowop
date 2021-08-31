@@ -208,12 +208,12 @@ class Network:
         # layers.append(Layer((self.i_size, 0), False))
 
         # # one hidden layer
-        # avgSize = (self.i_size + self.o_size) // 2
-        # layers.append(Layer((avgSize, self.i_size), False))
-        # layers.append(Layer((self.o_size, avgSize), True))
+        avgSize = (self.i_size + self.o_size) // 2
+        layers.append(Layer((avgSize, self.i_size), False))
+        layers.append(Layer((self.o_size, avgSize), True))
 
         # ONLY ONE LAYER
-        layers.append(Layer((self.o_size, self.i_size), True))
+        # layers.append(Layer((self.o_size, self.i_size), True))
 
         return layers
 
@@ -277,7 +277,7 @@ class Network:
 
     def backPropBatch(self, results: List[List[float]]):
         cost = self.getCost(results)
-        # print(f"COST: {cost} LEARNING RATE: {self.learningRate}")
+        print(f"COST: {cost} LEARNING RATE: {self.learningRate}")
         weightGrads = []
         biasGrads = []
         for output, expected, inpt in results:
