@@ -338,8 +338,8 @@ class Network:
         
     def backProp(self, output: List[float], expected: List[int],
         inpt: List[int]):
-        dwns = []
-        dbns = []
+        # dwns = []
+        # dbns = []
         # Initialize da to the derivative of the loss function
         dan = [Math.loss_prime(output[j], expected[j])
                 for j in range(len(output))]
