@@ -192,9 +192,9 @@ class Network:
 
     def __init__(self, i_size: int, o_size: int):
         #Hyperparameters
-        self.numBatches = 500
-        self.batchSize = 50
-        self.learningRate = 0.4
+        self.numBatches = 100
+        self.batchSize = 100
+        self.learningRate = 0.1
 
         self.i_size = i_size
         self.o_size = o_size
@@ -208,18 +208,18 @@ class Network:
         # layers.append(Layer((self.i_size, 0), False))
 
         # one hidden layer
-        # avgSize = (self.i_size + self.o_size) // 2
-        # layers.append(Layer((avgSize, self.i_size), False))
-        # layers.append(Layer((self.o_size, avgSize), True))
+        avgSize = (self.i_size + self.o_size) // 2
+        self.layers.append(Layer((avgSize, self.i_size), False))
+        self.layers.append(Layer((self.o_size, avgSize), True))
 
         # ONLY ONE LAYER
-        self.layers.append(Layer((self.o_size, self.i_size), True))
+        # self.layers.append(Layer((self.o_size, self.i_size), True))
     
     def updateLRate(self, count: int):
         """
         Update the learning rate given the number of iterations "count"
         """
-        baseRate = 0.4
+        baseRate = 0.1
         mult = 0.001
         mini = 1e-5
         lRate = - mult * count + baseRate
@@ -493,11 +493,11 @@ def train_network(samples: Dict[Tuple[int, ...], Tuple[int, ...]],
 
 def main() -> None:
     random.seed(0)
-    # f = lambda x, y: x + y  # operation to learn
+    f = lambda x, y: x + y  # operation to learn
     # f = lambda x: ~x
-    f = lambda x: x + 100
-    # n_args = 2              # arity of operation
-    n_args = 1 
+    # f = lambda x: x + 100
+    n_args = 2              # arity of operation
+    # n_args = 1 
     n_bits = 8              # size of each operand
 
     samples = create_samples(f, n_args, n_bits)
@@ -514,9 +514,9 @@ def main() -> None:
     for inputs in test_set:
         output = tuple(round(n, 2) for n in propagate_forward(network, inputs))
         bits = tuple(round(n) for n in output)
-        print("OUTPUT:", output)
-        print("BITACT:", bits)
-        print("BITEXP:", samples[inputs], end="\n\n")
+        # print("OUTPUT:", output)
+        # print("BITACT:", bits)
+        # print("BITEXP:", samples[inputs], end="\n\n")
 
 # def avgBiasArrs(arrs: List[List[List[float]]]):
 #     """
