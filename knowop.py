@@ -5,7 +5,6 @@
 # Assignment:   Know Op
 # Term:         Summer 2021
 
-from hashlib import new
 import math
 import itertools
 import random
