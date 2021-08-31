@@ -191,8 +191,9 @@ class Network:
 
     def __init__(self, i_size: int, o_size: int):
         #Hyperparameters
-        self.batchSize = 100
-        self.learningRate = 0.1
+        self.numBatches = 100
+        self.batchSize = 50
+        self.learningRate = 0.9
 
         self.i_size = i_size
         self.o_size = o_size
@@ -216,12 +217,27 @@ class Network:
 
         return layers
     
+    def updateLRate(self, count: int):
+        """
+        Update the learning rate given the number of iterations "count"
+        """
+        baseRate = 0.9
+        mult = 0.001
+        mini = 1e-5
+        lRate = - mult * count + baseRate
+        # lRate = baseRate - count * 0.01
+        if lRate < mini:
+            self.learningRate = mini
+        else:
+            self.learningRate = lRate
+        # decrease the learning rate exponentially
+    
     def train(self, trainSet):
         """
         Trains the model given a training set
         """
         # print("Trainset:", trainSet)
-        for count in range(100):
+        for count in range(self.numBatches):
             # Get a random batch of inputs from training set
             batch = [(x, trainSet[x]) for x in random.sample(list(trainSet),
                 self.batchSize)]
@@ -302,7 +318,7 @@ class Network:
 
     def backPropBatch(self, results: List[List[float]]):
         cost = self.getCost(results)
-        # print(f"COST: {cost} LEARNING RATE: {self.learningRate}")
+        print(f"COST: {cost} LEARNING RATE: {self.learningRate}")
         weightGrads = []
         biasGrads = []
         for output, expected, inpt in results:
@@ -366,71 +382,7 @@ class Network:
             self.updateDwns(dwn, i)
             self.updateBns(dbn, i)
         return dwns, dbns
-
-    def updateWeights(self, gradients: List[float]):
-        """
-        # TODO works only for 1 layer
-        """
-        # print(f"dwn: {gradients}")
-        for i in range(len(self.layers) - 1, -1, -1):
-            # for each layer
-            l = self.layers[i]
-            # print(f"Before Average: {l.w}")
-            # Calulate lr * dan1
-            grad = gradients[i]
-            lr = self.learningRate
-            # print(f"Subs: {subs}")
-            for j in range(len(l.w)):
-                # for each neuron
-                subs = lr * grad[j]
-                # print("GRADIENTS: ", grad)
-                for k in range(len(l.w[j])):
-                    # for each weight in the neuron
-                    l.w[j][k] -= subs
-            # print(f"After Average: {l.w}")
-        
-
-    def updateBiases(self, gradients: List[float]):
-        """
-        Using the gradient, update the biases
-        """
-        # print("BIASGRADIENTS: ", gradients)
-        # print("BIASES: ", self.layers[0].b)
-        # reverse gradients list
-        # gradients.reverse()
-        # print(f"\nUpdating parameters: {gradients}")
-        for i in range(len(self.layers) - 1, -1, -1):
-            # for each layer
-            l = self.layers[i]
-            # Calulate lr * dan1
-            grad = gradients[i]
-            lr = self.learningRate
-            
-            # print(f"Subs: {sub}")
-            for j in range(len(l.b)):
-                dbn = grad[j]
-                sub = lr * dbn
-                # for each neuron
-                # print(f"Weight of neuron: {l.b[j]}")
-                # Substract subs from weight of neuron
-                l.b[j] -= sub
-                # print(f"Updated weight of neuron: {l.b[j]}")
-
-    def updateLRate(self, count: int):
-        """
-        Update the learning rate given the number of iterations "count"
-        """
-        baseRate = 0.4
-        mult = 0.001
-        mini = 1e-5
-        lRate = - mult * count + baseRate
-        # lRate = baseRate - count * 0.01
-        if lRate < mini:
-            self.learningRate = mini
-        else:
-            self.learningRate = lRate
-        # decrease the learning rate exponentially
-
+    
     def getCost(self, results: List[List[float]]):
         """
         Returns the cost, which is the average of each loss
@@ -446,38 +398,81 @@ class Network:
         return sum(loss) / len(loss)
     
     def print_weights(self):
-        print()
         for i in range(len(self.layers)):
-            # print(f"Layer {i}: ")
             print(self.layers[i])
-            # for j in range(len(self.layers[i].w)):
-            #     print(f" Neuron {j + 1} weight:\
-#  {[round(x, 2) for x in self.layers[i].w[j]]}")
-        # print()
 
-    def avgWeightArrs(self, arrs):
-        """
-        Get average of a list of weight arrays
-        """
-        # print("ARRS: ", arrs)
-        avged = []
-        for k in range(len(self.layers)):
-            # for each layer
-            ltemp = []
+    # def updateWeights(self, gradients: List[float]):
+    #     """
+    #     # TODO works only for 1 layer
+    #     """
+    #     # print(f"dwn: {gradients}")
+    #     for i in range(len(self.layers) - 1, -1, -1):
+    #         # for each layer
+    #         l = self.layers[i]
+    #         # print(f"Before Average: {l.w}")
+    #         # Calulate lr * dan1
+    #         grad = gradients[i]
+    #         lr = self.learningRate
+    #         # print(f"Subs: {subs}")
+    #         for j in range(len(l.w)):
+    #             # for each neuron
+    #             subs = lr * grad[j]
+    #             # print("GRADIENTS: ", grad)
+    #             for k in range(len(l.w[j])):
+    #                 # for each weight in the neuron
+    #                 l.w[j][k] -= subs
+    #         # print(f"After Average: {l.w}")
+        
 
-            for j in range(len(arrs[0][k])):
-                # for each element in the list
-                ntemp = []
+    # def updateBiases(self, gradients: List[float]):
+    #     """
+    #     Using the gradient, update the biases
+    #     """
+    #     # print("BIASGRADIENTS: ", gradients)
+    #     # print("BIASES: ", self.layers[0].b)
+    #     # reverse gradients list
+    #     # gradients.reverse()
+    #     # print(f"\nUpdating parameters: {gradients}")
+    #     for i in range(len(self.layers) - 1, -1, -1):
+    #         # for each layer
+    #         l = self.layers[i]
+    #         # Calulate lr * dan1
+    #         grad = gradients[i]
+    #         lr = self.learningRate
+            
+    #         # print(f"Subs: {sub}")
+    #         for j in range(len(l.b)):
+    #             dbn = grad[j]
+    #             sub = lr * dbn
+    #             # for each neuron
+    #             # print(f"Weight of neuron: {l.b[j]}")
+    #             # Substract subs from weight of neuron
+    #             l.b[j] -= sub
+    #             # print(f"Updated weight of neuron: {l.b[j]}")
 
-                for i in range(len(arrs)):
-                    # for each list
-                    ntemp.append(arrs[i][k][j][0])
-                    # print(f"AVG: {avged} i:{i} k:{k} j:{j} LTEMP: {ltemp}")
-                ltemp.append(sum(ntemp) / len(ntemp))
-                # print(f"\nNTEMP: {ntemp} LTEMP: {ltemp}\n")
-            avged.append(ltemp)
-            # print(f"AVG: {avged} k:{k} j:{j} i:{i}")
-        return avged
+    # def avgWeightArrs(self, arrs):
+    #     """
+    #     Get average of a list of weight arrays
+    #     """
+    #     # print("ARRS: ", arrs)
+    #     avged = []
+    #     for k in range(len(self.layers)):
+    #         # for each layer
+    #         ltemp = []
+
+    #         for j in range(len(arrs[0][k])):
+    #             # for each element in the list
+    #             ntemp = []
+
+    #             for i in range(len(arrs)):
+    #                 # for each list
+    #                 ntemp.append(arrs[i][k][j][0])
+    #                 # print(f"AVG: {avged} i:{i} k:{k} j:{j} LTEMP: {ltemp}")
+    #             ltemp.append(sum(ntemp) / len(ntemp))
+    #             # print(f"\nNTEMP: {ntemp} LTEMP: {ltemp}\n")
+    #         avged.append(ltemp)
+    #         # print(f"AVG: {avged} k:{k} j:{j} i:{i}")
+    #     return avged
     
 def train_network(samples: Dict[Tuple[int, ...], Tuple[int, ...]],
                   i_size: int, o_size: int) -> List[Layer]:
@@ -498,7 +493,7 @@ def main() -> None:
     random.seed(0)
     # f = lambda x, y: x + y  # operation to learn
     # f = lambda x: ~x
-    f = lambda x: x | 1
+    f = lambda x: x + 100
     # n_args = 2              # arity of operation
     n_args = 1 
     n_bits = 8              # size of each operand
