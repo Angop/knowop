@@ -5,6 +5,7 @@
 # Assignment:   Know Op
 # Term:         Summer 2021
 
+from hashlib import new
 import math
 import itertools
 import random
@@ -160,6 +161,7 @@ def hadamard(arr1: List[float], arr2: List[float]) -> List[float]:
     """
     Performs hadamard multiplication
     """
+
     res = [0.0] * len(arr1)
     for i in range(len(arr1)):
         res[i] = arr1[i] * arr2[i]
@@ -191,19 +193,18 @@ class Network:
 
     def __init__(self, i_size: int, o_size: int):
         #Hyperparameters
-        self.numBatches = 100
+        self.numBatches = 500
         self.batchSize = 50
-        self.learningRate = 0.9
+        self.learningRate = 0.4
 
         self.i_size = i_size
         self.o_size = o_size
-        self.layers = self.initLayers()
+        self.layers = []
 
     def initLayers(self):
         """
         Initializes the layers
         """
-        layers = []
         # input layer LITERALLY DONT LITERALLY DEFINE THE INPUT LAYER!!!!!!!!!!
         # layers.append(Layer((self.i_size, 0), False))
 
@@ -213,15 +214,13 @@ class Network:
         # layers.append(Layer((self.o_size, avgSize), True))
 
         # ONLY ONE LAYER
-        layers.append(Layer((self.o_size, self.i_size), True))
-
-        return layers
+        self.layers.append(Layer((self.o_size, self.i_size), True))
     
     def updateLRate(self, count: int):
         """
         Update the learning rate given the number of iterations "count"
         """
-        baseRate = 0.9
+        baseRate = 0.4
         mult = 0.001
         mini = 1e-5
         lRate = - mult * count + baseRate
@@ -294,11 +293,12 @@ class Network:
             # print(f"total db: {self.layers[i].db}")
             # divide each dbn by batch size
             # print(f"db before updating: {self.layers[i].db}")
-            self.layers[i].b = \
+            self.layers[i].db = \
                  [db / self.batchSize for db in self.layers[i].db]
             # print(f"final db: {self.layers[i].db}")
             # for each neuron in weight matrix
             for n in range(len(self.layers[i].w)):
+                self.layers[i].b[n] -= self.learningRate * self.layers[i].db[n]
                 # for each w in neuron
                 for w in range(len(self.layers[i].w[0])):
                     # divide dw by batch size
@@ -356,6 +356,7 @@ class Network:
             # print(f"gnzn: {gnzn}\n")
             dzn = hadamard(gnzn, dan)
             dzn = [[x] for x in dzn]
+            # dzn = Math.transpose(dzn)
             # print(f"dzn: {dzn}\n")
             # dWn = dzn * aTn-1
             if i == 0:
@@ -368,13 +369,14 @@ class Network:
             # print(f"dwn: {dwn}")
             # Add to weight matrices list
             dwns.append(dwn)
+            # dan-1 = WTn * dzn
+            wtn = Math.transpose(l.w)
+            dan = Math.matmul(wtn, dzn)
+
             dbn = dzn
             # print(f"dbn: {dbn}")
             dbns.append(dbn)
             dbn = [x[0] for x in dzn]
-            # dan-1 = WTn * dzn
-            wtn = Math.transpose(l.w)
-            dan = Math.matmul(wtn, dzn)
             # Turn dan to a 1d list
             dan = [x[0] for x in dan]
             # Store in layer object
@@ -483,6 +485,8 @@ def train_network(samples: Dict[Tuple[int, ...], Tuple[int, ...]],
     """
     # Create network
     network = Network(i_size, o_size)
+    # Initialize layers
+    network.initLayers()
     # Train network
     network.train(samples)
     # Return trained network
