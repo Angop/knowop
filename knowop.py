@@ -161,7 +161,6 @@ def hadamard(arr1: List[float], arr2: List[float]) -> List[float]:
     Performs hadamard multiplication
     """
     res = [0.0] * len(arr1)
-
     for i in range(len(arr1)):
         res[i] = arr1[i] * arr2[i]
     return res
@@ -415,14 +414,15 @@ class Network:
         """
         Update the learning rate given the number of iterations "count"
         """
-        baseRate = 0.9
-        # mult = 0.001
-        # mini = 1e-5
-        # lRate = - mult * count + baseRate
-        lRate = baseRate - count * 0.001
-        # if lRate < mini:
-        #     self.learningRate = mini
-        self.learningRate = lRate
+        baseRate = 0.1
+        mult = 0.001
+        mini = 1e-5
+        lRate = - mult * count + baseRate
+        # lRate = baseRate - count * 0.01
+        if lRate < mini:
+            self.learningRate = mini
+        else:
+            self.learningRate = lRate
         # decrease the learning rate exponentially
 
     def getCost(self, results: List[List[float]]):
@@ -491,7 +491,7 @@ def main() -> None:
     random.seed(0)
     # f = lambda x, y: x + y  # operation to learn
     # f = lambda x: ~x
-    f = lambda x: x + 100
+    f = lambda x: x | 1
     # n_args = 2              # arity of operation
     n_args = 1 
     n_bits = 8              # size of each operand
