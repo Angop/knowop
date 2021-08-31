@@ -192,7 +192,7 @@ class Network:
 
     def __init__(self, i_size: int, o_size: int):
         #Hyperparameters
-        self.batchSize = 10
+        self.batchSize = 100
         self.learningRate = 0.1
 
         self.i_size = i_size
@@ -207,13 +207,13 @@ class Network:
         # input layer LITERALLY DONT LITERALLY DEFINE THE INPUT LAYER!!!!!!!!!!
         # layers.append(Layer((self.i_size, 0), False))
 
-        # # one hidden layer
-        avgSize = (self.i_size + self.o_size) // 2
-        layers.append(Layer((avgSize, self.i_size), False))
-        layers.append(Layer((self.o_size, avgSize), True))
+        # one hidden layer
+        # avgSize = (self.i_size + self.o_size) // 2
+        # layers.append(Layer((avgSize, self.i_size), False))
+        # layers.append(Layer((self.o_size, avgSize), True))
 
         # ONLY ONE LAYER
-        # layers.append(Layer((self.o_size, self.i_size), True))
+        layers.append(Layer((self.o_size, self.i_size), True))
 
         return layers
     
@@ -222,7 +222,7 @@ class Network:
         Trains the model given a training set
         """
         # print("Trainset:", trainSet)
-        for count in range(1000):
+        for count in range(100):
             # Get a random batch of inputs from training set
             batch = [(x, trainSet[x]) for x in random.sample(list(trainSet),
                 self.batchSize)]
@@ -307,8 +307,8 @@ class Network:
             
         # print(f"WEIGHT GRADS: {weightGrads}")
         # print(f"BIAS GRADS: {biasGrads}")
-        avgWeights = self.avgWeightArrs(weightGrads)
-        avgBiases = self.avgWeightArrs(biasGrads)
+        # avgWeights = self.avgWeightArrs(weightGrads)
+        # avgBiases = self.avgWeightArrs(biasGrads)
         # print(f"AVG WEIGHT GRADS: {avgWeights}")
         # print(f"AVG BIAS GRADS: {avgBiases}")
         
@@ -415,13 +415,14 @@ class Network:
         """
         Update the learning rate given the number of iterations "count"
         """
-        baseRate = 0.1
+        baseRate = 0.9
         mult = 0.001
         mini = 1e-5
         lRate = - mult * count + baseRate
         if lRate < mini:
             self.learningRate = mini
         self.learningRate = lRate
+        # decrease the learning rate exponentially
 
     def getCost(self, results: List[List[float]]):
         """
