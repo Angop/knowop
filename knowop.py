@@ -317,12 +317,13 @@ class Network:
     def backPropBatch(self, results: List[List[float]]):
         cost = self.getCost(results)
         print(f"COST: {cost} LEARNING RATE: {self.learningRate}")
-        weightGrads = []
-        biasGrads = []
+        # weightGrads = []
+        # biasGrads = []
         for output, expected, inpt in results:
-            dwns, dbns = self.backProp(output, expected, inpt)
-            weightGrads.append(dwns)
-            biasGrads.append(dbns)
+            # dwns, dbns = self.backProp(output, expected, inpt)
+            self.backProp(output, expected, inpt)
+            # weightGrads.append(dwns)
+            # biasGrads.append(dbns)
             
         # print(f"WEIGHT GRADS: {weightGrads}")
         # print(f"BIAS GRADS: {biasGrads}")
@@ -367,21 +368,21 @@ class Network:
             dwn = Math.matmul(dzn, atn1)
             # print(f"dwn: {dwn}")
             # Add to weight matrices list
-            dwns.append(dwn)
+            # dwns.append(dwn)
             # dan-1 = WTn * dzn
             wtn = Math.transpose(l.w)
             dan = Math.matmul(wtn, dzn)
 
             dbn = dzn
             # print(f"dbn: {dbn}")
-            dbns.append(dbn)
+            # dbns.append(dbn)
             dbn = [x[0] for x in dzn]
             # Turn dan to a 1d list
             dan = [x[0] for x in dan]
             # Store in layer object
             self.updateDwns(dwn, i)
             self.updateBns(dbn, i)
-        return dwns, dbns
+        # return dwns, dbns
     
     def getCost(self, results: List[List[float]]):
         """
