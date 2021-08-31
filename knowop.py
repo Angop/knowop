@@ -312,8 +312,7 @@ class Network:
             size = (len(self.layers[i].w), len(self.layers[i].w[0]))
             self.layers[i].dw = \
                 [[0.0 for _ in range(size[1])] for _ in range(size[0])]
-            self.layers[i].db = [0.0] * size[0]
-
+            self.layers[i].db = [0.0] * size[0] 
 
 
     def backPropBatch(self, results: List[List[float]]):
