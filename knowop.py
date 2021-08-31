@@ -416,11 +416,12 @@ class Network:
         Update the learning rate given the number of iterations "count"
         """
         baseRate = 0.9
-        mult = 0.001
-        mini = 1e-5
-        lRate = - mult * count + baseRate
-        if lRate < mini:
-            self.learningRate = mini
+        # mult = 0.001
+        # mini = 1e-5
+        # lRate = - mult * count + baseRate
+        lRate = baseRate - count * 0.001
+        # if lRate < mini:
+        #     self.learningRate = mini
         self.learningRate = lRate
         # decrease the learning rate exponentially
 
