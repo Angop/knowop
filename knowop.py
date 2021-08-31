@@ -208,12 +208,12 @@ class Network:
         # layers.append(Layer((self.i_size, 0), False))
 
         # one hidden layer
-        avgSize = (self.i_size + self.o_size) // 2
-        self.layers.append(Layer((avgSize, self.i_size), False))
-        self.layers.append(Layer((self.o_size, avgSize), True))
+        # avgSize = (self.i_size + self.o_size) // 2
+        # self.layers.append(Layer((avgSize, self.i_size), False))
+        # self.layers.append(Layer((self.o_size, avgSize), True))
 
         # ONLY ONE LAYER
-        # self.layers.append(Layer((self.o_size, self.i_size), True))
+        self.layers.append(Layer((self.o_size, self.i_size), True))
     
     def updateLRate(self, count: int):
         """
@@ -354,8 +354,8 @@ class Network:
             # print(f"dan: {dan}\n")
             # print(f"gnzn: {gnzn}\n")
             dzn = hadamard(gnzn, dan)
-            dzn = [[x] for x in dzn]
-            # dzn = Math.transpose(dzn)
+            # dzn = [[x] for x in dzn]
+            dzn = Math.transpose([dzn])
             # print(f"dzn: {dzn}\n")
             # dWn = dzn * aTn-1
             if i == 0:
@@ -514,9 +514,9 @@ def main() -> None:
     for inputs in test_set:
         output = tuple(round(n, 2) for n in propagate_forward(network, inputs))
         bits = tuple(round(n) for n in output)
-        # print("OUTPUT:", output)
-        # print("BITACT:", bits)
-        # print("BITEXP:", samples[inputs], end="\n\n")
+        print("OUTPUT:", output)
+        print("BITACT:", bits)
+        print("BITEXP:", samples[inputs], end="\n\n")
 
 # def avgBiasArrs(arrs: List[List[List[float]]]):
 #     """
