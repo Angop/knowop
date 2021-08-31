@@ -141,7 +141,30 @@ class Layer:  # do not modify class
         return tuple(self.a)
 
 
+def propagate_forward(layers: List[Layer],
+ inpt: Tuple[float, ...]) -> Tuple[float, ...]:
+    '''
+    Given trained layers, propagate an input forward
+    '''
+    i = 0
+    for layer in layers:
+        # print(f"Layer {i}")
+        # print(f"initial: {layer.a}")
+        inpt = layer.activate(inpt)
+        # print(f"layer a: {layer.a}")
+        i += 1
+    return inpt
 
+
+def hadamard(arr1: List[float], arr2: List[float]) -> List[float]:
+    """
+    Performs hadamard multiplication
+    """
+    res = [0.0] * len(arr1)
+
+    for i in range(len(arr1)):
+        res[i] = arr1[i] * arr2[i]
+    return res
 
 def create_samples(f: Callable[..., int], n_args: int, n_bits: int,
 ) -> Dict[Tuple[int, ...], Tuple[int, ...]]:
@@ -194,28 +217,9 @@ class Network:
 
         return layers
 
-    def train(self, trainSet):
-        """
-        Trains the model given a training set
-        """
-        # print("DEF TRAIN:",trainSet)
-        for count in range(100):
-            # Get a random batch of inputs from training set
-            batch = [(x, trainSet[x]) for x in random.sample(list(trainSet),
-                self.batchSize)]
-            # Run each input through the network
-            res = []
-            for inpt, expected in batch:
-                res.append((self.forwardProp(inpt), expected, inpt))
-                # print cost of iteration
-            # Backpropagate the error
-            self.backPropBatch(res)
-            self.updateLRate(count)
-        self.print_weights()
-
     def forwardProp(self, inpt: Tuple[int, ...]) -> Tuple[int, ...]:
         """
-        Propogates the input through the input and returns the output
+        Propogates the input through the network and returns the output
         """
         i = 0
         for layer in self.layers:
@@ -225,25 +229,72 @@ class Network:
             # print(f"layer a: {layer.a}")
             i += 1
         return inpt
+    
+    def updateDwns(self, dwn: List[List[float]], x: int):
+        '''
+        for each list in self.dw add dwn to each coloum in self.dw
+        '''
+        # For each neuron in layer
+        for i in range(len(self.layers[x].dw)):
+            # For each weight in neuron
+            for j in range(len(self.layers[x].dw[0])):
+                self.layers[x].dw[i][j] += dwn[i][0]
+
+    def updateBns(self, dbn: List[float], x: int):
+        '''
+        for each neuron in self.db add dbn to each coloum in self.db
+        '''
+        # For each neuron in layer
+        for i in range(len(self.layers[x].db)):
+            # For each weight in neuron
+            self.layers[x].db[i] += dbn[i]
+
+    def updateParams(self):
+        '''
+        divide each db and dw for each layer by the batchsize
+        '''
+        # for each layer
+        for i in range(len(self.layers)):
+            # print(f"total dw: {self.layers[i].dw}")
+            # print(f"total db: {self.layers[i].db}")
+            # divide each dbn by batch size
+            self.layers[i].db =\
+                 [db / self.batchSize for db in self.layers[i].db]
+            # print(f"final db: {self.layers[i].db}")
+            # for each neuron in weight matrix
+            for n in range(len(self.layers[i].w)):
+                # for each w in neuron
+                for w in range(len(self.layers[i].w[0])):
+                    # divide dw by batch size
+                    self.layers[i].dw[n][w] =\
+                         self.layers[i].dw[n][w] / self.batchSize
+                    # substract learning rate - dw from w
+                    self.layers[i].w[n][w] -=\
+                         self.learningRate * self.layers[i].dw[n][w]
+            # print(f"final dw: {self.layers[i].dw}")
+
+
 
     def backPropBatch(self, results: List[List[float]]):
         cost = self.getCost(results)
-        print(f"COST: {cost} LEARNING RATE: {self.learningRate}")
+        # print(f"COST: {cost} LEARNING RATE: {self.learningRate}")
         weightGrads = []
         biasGrads = []
         for output, expected, inpt in results:
             dwns, dbns = self.backProp(output, expected, inpt)
             weightGrads.append(dwns)
             biasGrads.append(dbns)
-            # print(self.layers[0].a)
-        # print(weightGrads)
+            
+        # print(f"WEIGHT GRADS: {weightGrads}")
+        # print(f"BIAS GRADS: {biasGrads}")
         avgWeights = self.avgWeightArrs(weightGrads)
         avgBiases = self.avgWeightArrs(biasGrads)
         # print(f"AVG WEIGHT GRADS: {avgWeights}")
         # print(f"AVG BIAS GRADS: {avgBiases}")
-
-        self.updateWeights(avgWeights)
-        self.updateBiases(avgBiases)
+        
+        self.updateParams()
+        # self.updateWeights(avgWeights)
+        # self.updateBiases(avgBiases)
         
     def backProp(self, output: List[float], expected: List[int],
         inpt: List[int]):
@@ -253,26 +304,20 @@ class Network:
         dan = [Math.loss_prime(output[j], expected[j])
                 for j in range(len(output))]
         for i in range(len(self.layers) - 1, -1, -1):
-            # print("\n\nLAYER ", i)
             # Get Layer
-            l = self.layers[i]
-            
+            l = self.layers[i]            
             # dzn = dan ⊙ gn'(zn)
             gnzn = []
-        
             for n in range(len(l.z)):
                 # for each neuron
                 gnzn.append(Math.sigmoid_prime(l.z[n]) if l.g is Math.sigmoid
-                    else Math.relu_prime(l.z[n]))
-            
+                    else Math.relu_prime(l.z[n])) 
             # print(f"dan: {dan}\n")
             # print(f"gnzn: {gnzn}\n")
             dzn = hadamard(gnzn, dan)
             dzn = [[x] for x in dzn]
             # print(f"dzn: {dzn}\n")
-
             # dWn = dzn * aTn-1
-            # print(f"Layer {i-1}: {self.layers[i - 1].a}")
             if i == 0:
                 # print(f"INPUT: {inpt}")
                 atn1 = Math.transpose([list(inpt)])
@@ -283,34 +328,29 @@ class Network:
             # print(f"dwn: {dwn}")
             # Add to weight matrices list
             dwns.append(dwn)
-
-            # dbn = dzn
             dbn = dzn
             # print(f"dbn: {dbn}")
             dbns.append(dbn)
-             
+            dbn = [x[0] for x in dzn]
             # dan-1 = WTn * dzn
             wtn = Math.transpose(l.w)
             dan = Math.matmul(wtn, dzn)
             # Turn dan to a 1d list
             dan = [x[0] for x in dan]
-
-            # Save the gradient
+            # Store in layer object
+            self.updateDwns(dwn, i)
+            self.updateBns(dbn, i)
         return dwns, dbns
 
     def updateWeights(self, gradients: List[float]):
         """
         # TODO works only for 1 layer
         """
-        # print("updating")
         # print(f"dwn: {gradients}")
-        # reverse gradients list
-        # gradients[0].reverse()
-        # print(f"dwn: {gradients}")
-        # print(f"\nUpdating parameters: {gradients}")
         for i in range(len(self.layers) - 1, -1, -1):
             # for each layer
             l = self.layers[i]
+            # print(f"Before Average: {l.w}")
             # Calulate lr * dan1
             grad = gradients[i]
             lr = self.learningRate
@@ -322,6 +362,8 @@ class Network:
                 for k in range(len(l.w[j])):
                     # for each weight in the neuron
                     l.w[j][k] -= subs
+            # print(f"After Average: {l.w}")
+        
 
     def updateBiases(self, gradients: List[float]):
         """
@@ -376,8 +418,13 @@ class Network:
         return sum(loss) / len(loss)
     
     def print_weights(self):
+        print()
         for i in range(len(self.layers)):
-            print(f"Layer {i}: ", self.layers[i].w)
+            print(f"Layer {i}: ")
+            for j in range(len(self.layers[i].w)):
+                print(f" Neuron {j + 1} weight:\
+ {[round(x, 2) for x in self.layers[i].w[j]]}")
+        print()
 
     def avgWeightArrs(self, arrs):
         """
@@ -402,22 +449,26 @@ class Network:
             avged.append(ltemp)
             # print(f"AVG: {avged} k:{k} j:{j} i:{i}")
         return avged
-
-def propagate_forward(layers: List[Layer],
- inpt: Tuple[float, ...]) -> Tuple[float, ...]:
-    '''
-    Given trained layers, propagate an input forward
-    '''
-    i = 0
-    for layer in layers:
-        # print(f"Layer {i}")
-        # print(f"initial: {layer.a}")
-        inpt = layer.activate(inpt)
-        # print(f"layer a: {layer.a}")
-        i += 1
-    return inpt
-
-
+    
+    def train(self, trainSet):
+        """
+        Trains the model given a training set
+        """
+        # print("Trainset:", trainSet)
+        for count in range(100):
+            # Get a random batch of inputs from training set
+            batch = [(x, trainSet[x]) for x in random.sample(list(trainSet),
+                self.batchSize)]
+            # print(f"Batch: {batch}")
+            # Run each input through the network
+            res = []
+            for inpt, expected in batch:
+                res.append((self.forwardProp(inpt), expected, inpt))
+                # print cost of iteration
+            # Backpropagate the error
+            self.backPropBatch(res)
+            self.updateLRate(count)
+        self.print_weights()
 
 def train_network(samples: Dict[Tuple[int, ...], Tuple[int, ...]],
                   i_size: int, o_size: int) -> List[Layer]:
@@ -474,16 +525,6 @@ def main() -> None:
 #             temp.append(arrs[i][j][0][0])
 #         avged.append(sum(temp) / len(temp))
 #     return avged
-
-def hadamard(arr1: List[float], arr2: List[float]) -> List[float]:
-    """
-    Performs hadamard multiplication
-    """
-    res = [0.0] * len(arr1)
-
-    for i in range(len(arr1)):
-        res[i] = arr1[i] * arr2[i]
-    return res
 
 if __name__ == "__main__":
     main()
