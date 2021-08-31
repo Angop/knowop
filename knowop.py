@@ -277,7 +277,8 @@ class Network:
             # print(f"total dw: {self.layers[i].dw}")
             # print(f"total db: {self.layers[i].db}")
             # divide each dbn by batch size
-            self.layers[i].db =\
+            # print(f"db before updating: {self.layers[i].db}")
+            self.layers[i].b = \
                  [db / self.batchSize for db in self.layers[i].db]
             # print(f"final db: {self.layers[i].db}")
             # for each neuron in weight matrix
@@ -291,12 +292,17 @@ class Network:
                     self.layers[i].w[n][w] -=\
                          self.learningRate * self.layers[i].dw[n][w]
             # print(f"final dw: {self.layers[i].dw}")
+            # Reset db and dw
+            size = (len(self.layers[i].w), len(self.layers[i].w[0]))
+            self.layers[i].dw = \
+                [[0.0 for _ in range(size[1])] for _ in range(size[0])]
+            self.layers[i].db= [0.0] * size[0]
 
 
 
     def backPropBatch(self, results: List[List[float]]):
         cost = self.getCost(results)
-        print(f"COST: {cost} LEARNING RATE: {self.learningRate}")
+        # print(f"COST: {cost} LEARNING RATE: {self.learningRate}")
         weightGrads = []
         biasGrads = []
         for output, expected, inpt in results:
@@ -414,7 +420,7 @@ class Network:
         """
         Update the learning rate given the number of iterations "count"
         """
-        baseRate = 0.1
+        baseRate = 0.4
         mult = 0.001
         mini = 1e-5
         lRate = - mult * count + baseRate
@@ -442,11 +448,12 @@ class Network:
     def print_weights(self):
         print()
         for i in range(len(self.layers)):
-            print(f"Layer {i}: ")
-            for j in range(len(self.layers[i].w)):
-                print(f" Neuron {j + 1} weight:\
- {[round(x, 2) for x in self.layers[i].w[j]]}")
-        print()
+            # print(f"Layer {i}: ")
+            print(self.layers[i])
+            # for j in range(len(self.layers[i].w)):
+            #     print(f" Neuron {j + 1} weight:\
+#  {[round(x, 2) for x in self.layers[i].w[j]]}")
+        # print()
 
     def avgWeightArrs(self, arrs):
         """
