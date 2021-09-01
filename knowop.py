@@ -390,7 +390,7 @@ class Network:
                 # atn1 = Math.transpose([list(inpt)])
                 atn1 = [list(inpt)]
             else:
-                atn1 = Math.transpose([self.layers[ i - 1].a])
+                atn1 = Math.transpose([self.layers[i - 1].a])
             # print(f"after transpose atn1: {atn1}")
             dwn = Math.matmul(dzn, atn1)
             # print(f"dwn: {dwn}")
@@ -539,14 +539,19 @@ def main() -> None:
     # print(train_set)
 
     network = train_network(train_set, n_args * n_bits, n_bits)
+    count = 0
+    correct = 0
     for inputs in test_set:
         output = tuple(round(n, 2) \
             for n in propagate_forward(network, inputs))
         bits = tuple(round(n) for n in output)
+        if samples[inputs] == bits:
+            correct += 1
+        count += 1
         # print("OUTPUT:", output)
         # print("BITACT:", bits)
         # print("BITEXP:", samples[inputs], end="\n\n")
-
+    print(f"Accuracy: {correct / count}")
 # def avgBiasArrs(arrs: List[List[List[float]]]):
 #     """
 #     """
