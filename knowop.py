@@ -236,7 +236,7 @@ class Network:
         Update the learning rate given the number of iterations "count"
         """
         baseRate = 0.02
-        mult = 0.001
+        mult = 0.0001
         mini = 1e-5
         lRate = - mult * count + baseRate
         # lRate = baseRate - count * 0.01
@@ -382,8 +382,8 @@ class Network:
                     else Math.relu_prime(l.z[n])) 
             # print(f"dan: {dan}\n")
             # print(f"gnzn: {gnzn}\n")
-            dzn = substract_lists(self.layers[i].a, expected)
-            # dzn = hadamard(gnzn, dan)
+            # dzn = substract_lists(self.layers[i].a, expected)
+            dzn = hadamard(gnzn, dan)
             dzn = [[x] for x in dzn]
             # print(f"dzn: {dzn}\n")
             # dWn = dzn * aTn-1
@@ -525,10 +525,10 @@ def train_network(samples: Dict[Tuple[int, ...], Tuple[int, ...]],
 def main() -> None:
     random.seed(0)
     # f = lambda x, y: x | y  # operation to learn
-    f = lambda x: x > 2
+    f = lambda x: x < 2
     # f = lambda x: ~x
     # f = lambda x: x + 100
-    # n_args = 2              # arity of operation
+    n_args = 2              # arity of operation
     n_args = 1 
     n_bits = 8              # size of each operand
 
