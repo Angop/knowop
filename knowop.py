@@ -363,11 +363,11 @@ class Network:
         # dwns = []
         # dbns = []
         # Initialize da to the derivative of the loss function
-        dan = [Math.loss_prime(output[j], expected[j])
-                for j in range(len(output))]
+        # dan = [Math.loss_prime(output[j], expected[j])
+        #         for j in range(len(output))]
         
         for i in range(len(self.layers) - 1, -1, -1):
-            # dan = substract_lists(self.layers[i].a, expected)
+            dan = substract_lists(self.layers[i].a, expected)
             # print(f"dan: {dan}\n")
             # print(f"Output: {output},  Expected: {expected}, Input: {inpt}")
             # Get Layer
@@ -540,18 +540,17 @@ def main() -> None:
 
     network = train_network(train_set, n_args * n_bits, n_bits)
     count = 0
-    correct = 0
     for inputs in test_set:
-        output = tuple(round(n, 2) \
-            for n in propagate_forward(network, inputs))
+        output = tuple(round(n, 2) for n in \
+            propagate_forward(network, inputs))
         bits = tuple(round(n) for n in output)
+        print("OUTPUT:", output)
+        print("BITACT:", bits)
+        print("BITEXP:", samples[inputs])
+
         if samples[inputs] == bits:
-            correct += 1
-        count += 1
-        # print("OUTPUT:", output)
-        # print("BITACT:", bits)
-        # print("BITEXP:", samples[inputs], end="\n\n")
-    print(f"Accuracy: {correct / count}")
+            count += 1
+    print(f"Correct: {count}")
 # def avgBiasArrs(arrs: List[List[List[float]]]):
 #     """
 #     """
