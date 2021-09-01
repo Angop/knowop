@@ -387,8 +387,8 @@ class Network:
                     else Math.relu_prime(l.z[n])) 
             # print(f"dan: {dan}\n")
             # print(f"gnzn: {gnzn}\n")
-            # dzn = substract_lists(self.layers[i].a, expected)
-            dzn = hadamard(gnzn, dan)
+            dzn = substract_lists(self.layers[i].a, expected)
+            # dzn = hadamard(gnzn, dan)
             dzn = [[x] for x in dzn]
             # print(f"dzn: {dzn}\n")
             # dWn = dzn * aTn-1
