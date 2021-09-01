@@ -208,7 +208,7 @@ class Network:
 
     def __init__(self, i_size: int, o_size: int):
         #Hyperparameters
-        self.numBatches = 30 
+        self.numBatches = 50 
         self.batchSize = 100
         self.learningRate = 0.2
 
