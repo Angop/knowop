@@ -208,9 +208,9 @@ class Network:
 
     def __init__(self, i_size: int, o_size: int):
         #Hyperparameters
-        self.numBatches = 200 
-        self.batchSize = 70
-        self.learningRate = 0.9
+        self.numBatches = 100 
+        self.batchSize = 100
+        self.learningRate = 0.2
 
         self.i_size = i_size
         self.o_size = o_size
@@ -235,8 +235,8 @@ class Network:
         """
         Update the learning rate given the number of iterations "count"
         """
-        baseRate = 0.01
-        mult = 0.0001
+        baseRate = 0.02
+        mult = 0.001
         mini = 1e-5
         lRate = - mult * count + baseRate
         # lRate = baseRate - count * 0.01
@@ -382,7 +382,8 @@ class Network:
                     else Math.relu_prime(l.z[n])) 
             # print(f"dan: {dan}\n")
             # print(f"gnzn: {gnzn}\n")
-            dzn = hadamard(gnzn, dan)
+            dzn = substract_lists(self.layers[i].a, expected)
+            # dzn = hadamard(gnzn, dan)
             dzn = [[x] for x in dzn]
             # print(f"dzn: {dzn}\n")
             # dWn = dzn * aTn-1
@@ -523,11 +524,12 @@ def train_network(samples: Dict[Tuple[int, ...], Tuple[int, ...]],
 
 def main() -> None:
     random.seed(0)
-    f = lambda x, y: x | y  # operation to learn
+    # f = lambda x, y: x | y  # operation to learn
+    f = lambda x: x > 2
     # f = lambda x: ~x
     # f = lambda x: x + 100
-    n_args = 2              # arity of operation
-    # n_args = 1 
+    # n_args = 2              # arity of operation
+    n_args = 1 
     n_bits = 8              # size of each operand
 
     samples = create_samples(f, n_args, n_bits)
