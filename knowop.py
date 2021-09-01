@@ -208,9 +208,9 @@ class Network:
 
     def __init__(self, i_size: int, o_size: int):
         #Hyperparameters
-        self.numBatches = 150
+        self.numBatches = 100
         self.batchSize = 100
-        self.learningRate = 0.4
+        self.learningRate = 0.1
 
         self.i_size = i_size
         self.o_size = o_size
@@ -235,8 +235,8 @@ class Network:
         """
         Update the learning rate given the number of iterations "count"
         """
-        baseRate = 0.4
-        mult = 0.00099
+        baseRate = 0.1
+        mult = 0.001
         mini = 1e-5
         lRate = - mult * count + baseRate
         # lRate = baseRate - count * 0.01
@@ -363,11 +363,11 @@ class Network:
         # dwns = []
         # dbns = []
         # Initialize da to the derivative of the loss function
-        # dan = [Math.loss_prime(output[j], expected[j])
-        #         for j in range(len(output))]
+        dan = [Math.loss_prime(output[j], expected[j])
+                for j in range(len(output))]
         
         for i in range(len(self.layers) - 1, -1, -1):
-            dan = substract_lists(self.layers[i].a, expected)
+            # dan = substract_lists(self.layers[i].a, expected)
             # print(f"dan: {dan}\n")
             # print(f"Output: {output},  Expected: {expected}, Input: {inpt}")
             # Get Layer
