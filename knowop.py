@@ -208,7 +208,7 @@ class Network:
 
     def __init__(self, i_size: int, o_size: int):
         #Hyperparameters
-        self.numBatches = 200 
+        self.numBatches = 30 
         self.batchSize = 100
         self.learningRate = 0.2
 
@@ -527,12 +527,12 @@ def train_network(samples: Dict[Tuple[int, ...], Tuple[int, ...]],
 
 def main() -> None:
     random.seed(0)
-    # f = lambda x, y: x | y  # operation to learn
-    f = lambda x: x < 2
+    f = lambda x, y: x & y  # operation to learn
+    # f = lambda x: x < 2
     # f = lambda x: ~x
     # f = lambda x: x + 100
     n_args = 2              # arity of operation
-    n_args = 1 
+    # n_args = 1 
     n_bits = 8              # size of each operand
 
     samples = create_samples(f, n_args, n_bits)
