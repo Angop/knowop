@@ -235,8 +235,8 @@ class Network:
         """
         Update the learning rate given the number of iterations "count"
         """
-        baseRate = 0.9
-        mult = 0.001
+        baseRate = 0.01
+        mult = 0.0001
         mini = 1e-5
         lRate = - mult * count + baseRate
         # lRate = baseRate - count * 0.01
@@ -290,6 +290,8 @@ class Network:
         for i in range(len(self.layers[x].dw)):
             # For each weight in neuron
             for j in range(len(self.layers[x].dw[0])):
+                # print(len(self.layers[x].dw[0]))
+                # print(dwn)
                 self.layers[x].dw[i][j] += dwn[i][j]
 
     def updateBns(self, dbn: List[float], x: int):
@@ -390,7 +392,7 @@ class Network:
                 # atn1 = Math.transpose([list(inpt)])
                 atn1 = [list(inpt)]
             else:
-                atn1 = Math.transpose([self.layers[i - 1].a])
+                atn1 = [self.layers[i - 1].a]
             # print(f"after transpose atn1: {atn1}")
             dwn = Math.matmul(dzn, atn1)
             # print(f"dwn: {dwn}")
