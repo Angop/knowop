@@ -285,11 +285,12 @@ class Network:
         '''
         for each list in self.dw add dwn to each coloum in self.dw
         '''
+        # print(dwn)
         # For each neuron in layer
         for i in range(len(self.layers[x].dw)):
             # For each weight in neuron
             for j in range(len(self.layers[x].dw[0])):
-                self.layers[x].dw[i][j] += dwn[i][0]
+                self.layers[x].dw[i][j] += dwn[i][j]
 
     def updateBns(self, dbn: List[float], x: int):
         '''
@@ -323,7 +324,7 @@ class Network:
                          self.layers[i].dw[n][w] / self.batchSize
                     # substract learning rate - dw from w
                     self.layers[i].w[n][w] -=\
-                         self.learningRate * self.layers[i].dw[n][w]
+                        self.learningRate * self.layers[i].dw[n][w]
             # print(f"final b: {self.layers[i].b}")
             # print(f"final w: {self.layers[i].w}")
             # Reset db and dw
@@ -331,6 +332,8 @@ class Network:
             self.layers[i].dw = \
                 [[0.0 for _ in range(size[1])] for _ in range(size[0])]
             self.layers[i].db = [0.0] * size[0] 
+            # print(f"reset db: {self.layers[i].db}")
+            # print(f"reset dw: {self.layers[i].dw}")
 
 
     def backPropBatch(self, results: List[List[float]]):
@@ -360,11 +363,11 @@ class Network:
         # dwns = []
         # dbns = []
         # Initialize da to the derivative of the loss function
-        # dan = [Math.loss_prime(output[j], expected[j])
-        #         for j in range(len(output))]
+        dan = [Math.loss_prime(output[j], expected[j])
+                for j in range(len(output))]
         
         for i in range(len(self.layers) - 1, -1, -1):
-            dan = substract_lists(self.layers[i].a, expected)
+            # dan = substract_lists(self.layers[i].a, expected)
             # print(f"dan: {dan}\n")
             # print(f"Output: {output},  Expected: {expected}, Input: {inpt}")
             # Get Layer
@@ -383,10 +386,12 @@ class Network:
             # dWn = dzn * aTn-1
             if i == 0:
                 # print(f"INPUT: {inpt}")
-                atn1 = Math.transpose([list(inpt)])
+                # print(f"before transpose atn1: {[list(inpt)]}")
+                # atn1 = Math.transpose([list(inpt)])
+                atn1 = [list(inpt)]
             else:
-                atn1 = Math.transpose([self.layers[i - 1].a])
-            # print(f"atn1: {atn1}")
+                atn1 = Math.transpose([self.layers[ i - 1].a])
+            # print(f"after transpose atn1: {atn1}")
             dwn = Math.matmul(dzn, atn1)
             # print(f"dwn: {dwn}")
             # Add to weight matrices list
@@ -533,11 +538,11 @@ def main() -> None:
     print("Train Size:", len(train_set), "Test Size:", len(test_set))
     # print(train_set)
 
-    # network = train_network(train_set, n_args * n_bits, n_bits)
-    # for inputs in test_set:
-        # output = tuple(round(n, 2) \
-            # for n in propagate_forward(network, inputs))
-        # bits = tuple(round(n) for n in output)
+    network = train_network(train_set, n_args * n_bits, n_bits)
+    for inputs in test_set:
+        output = tuple(round(n, 2) \
+            for n in propagate_forward(network, inputs))
+        bits = tuple(round(n) for n in output)
         # print("OUTPUT:", output)
         # print("BITACT:", bits)
         # print("BITEXP:", samples[inputs], end="\n\n")
