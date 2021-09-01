@@ -533,7 +533,7 @@ def main() -> None:
     print("Train Size:", len(train_set), "Test Size:", len(test_set))
     # print(train_set)
 
-    network = train_network(train_set, n_args * n_bits, n_bits)
+    # network = train_network(train_set, n_args * n_bits, n_bits)
     # for inputs in test_set:
         # output = tuple(round(n, 2) for n in propagate_forward(network, inputs))
         # bits = tuple(round(n) for n in output)
