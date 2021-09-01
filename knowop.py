@@ -208,7 +208,7 @@ class Network:
 
     def __init__(self, i_size: int, o_size: int):
         #Hyperparameters
-        self.numBatches = 80
+        self.numBatches = 150
         self.batchSize = 100
         self.learningRate = 0.4
 
@@ -236,7 +236,7 @@ class Network:
         Update the learning rate given the number of iterations "count"
         """
         baseRate = 0.4
-        mult = 0.01
+        mult = 0.00099
         mini = 1e-5
         lRate = - mult * count + baseRate
         # lRate = baseRate - count * 0.01
@@ -269,17 +269,16 @@ class Network:
         """
         Propogates the input through the network and returns the output
         """
-        try:
-            i = 0
-            for layer in self.layers:
-                # print(f"Layer {i}")
-                # print(f"initial: {layer.a}")
-                inpt = layer.activate(inpt)
-                # print(f"layer a: {layer.a}")
-                i += 1
-            return inpt
-        except:
-            print("muji muji")
+        # try:
+        i = 0
+        for layer in self.layers:
+            # print(f"Layer {i}")
+            # print(f"initial: {layer.a}")
+            inpt = layer.activate(inpt)
+            # print(f"layer a: {layer.a}")
+            i += 1
+        return inpt
+        # except:
             # print(f"{self.layers[i].b}")
     
     def updateDwns(self, dwn: List[List[float]], x: int):
@@ -535,9 +534,9 @@ def main() -> None:
     # print(train_set)
 
     network = train_network(train_set, n_args * n_bits, n_bits)
-    for inputs in test_set:
-        output = tuple(round(n, 2) for n in propagate_forward(network, inputs))
-        bits = tuple(round(n) for n in output)
+    # for inputs in test_set:
+        # output = tuple(round(n, 2) for n in propagate_forward(network, inputs))
+        # bits = tuple(round(n) for n in output)
         # print("OUTPUT:", output)
         # print("BITACT:", bits)
         # print("BITEXP:", samples[inputs], end="\n\n")
