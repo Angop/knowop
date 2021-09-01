@@ -535,7 +535,8 @@ def main() -> None:
 
     # network = train_network(train_set, n_args * n_bits, n_bits)
     # for inputs in test_set:
-        # output = tuple(round(n, 2) for n in propagate_forward(network, inputs))
+        # output = tuple(round(n, 2) \
+            # for n in propagate_forward(network, inputs))
         # bits = tuple(round(n) for n in output)
         # print("OUTPUT:", output)
         # print("BITACT:", bits)
