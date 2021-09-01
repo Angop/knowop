@@ -147,17 +147,17 @@ def propagate_forward(layers: List[Layer],
     '''
     Given trained layers, propagate an input forward
     '''
-    try: 
-        i = 0
-        for layer in layers:
-            # print(f"Layer {i}")
-            # print(f"initial: {layer.a}")
-            inpt = layer.activate(inpt)
-            # print(f"layer a: {layer.a}")
-            i += 1
-        return inpt
-    except OverflowError as e: 
-        print(e)
+    # try: 
+    i = 0
+    for layer in layers:
+        # print(f"Layer {i}")
+        # print(f"initial: {layer.a}")
+        inpt = layer.activate(inpt)
+        # print(f"layer a: {layer.a}")
+        i += 1
+    return inpt
+    # except OverflowError as e: 
+        # print(e)
         # print(layers[0].w)
         # print(layers[0].b)
         # exit program
@@ -171,6 +171,15 @@ def hadamard(arr1: List[float], arr2: List[float]) -> List[float]:
     res = [0.0] * len(arr1)
     for i in range(len(arr1)):
         res[i] = arr1[i] * arr2[i]
+    return res
+
+def substract_lists(arr1: List[float], arr2: List[float]) -> List[float]:
+    """
+    Performs substraction of two lists
+    """
+    res = [0.0] * len(arr1)
+    for i in range(len(arr1)):
+        res[i] = arr1[i] - arr2[i]
     return res
 
 def create_samples(f: Callable[..., int], n_args: int, n_bits: int,
@@ -199,9 +208,9 @@ class Network:
 
     def __init__(self, i_size: int, o_size: int):
         #Hyperparameters
-        self.numBatches = 291
+        self.numBatches = 80
         self.batchSize = 100
-        self.learningRate = 0.1
+        self.learningRate = 0.4
 
         self.i_size = i_size
         self.o_size = o_size
@@ -227,7 +236,7 @@ class Network:
         Update the learning rate given the number of iterations "count"
         """
         baseRate = 0.4
-        mult = 0.001
+        mult = 0.01
         mini = 1e-5
         lRate = - mult * count + baseRate
         # lRate = baseRate - count * 0.01
@@ -327,7 +336,7 @@ class Network:
 
     def backPropBatch(self, results: List[List[float]]):
         cost = self.getCost(results)
-        # print(f"COST: {cost} LEARNING RATE: {self.learningRate}")
+        print(f"COST: {cost} LEARNING RATE: {self.learningRate}")
         # weightGrads = []
         # biasGrads = []
         for output, expected, inpt in results:
@@ -352,10 +361,12 @@ class Network:
         # dwns = []
         # dbns = []
         # Initialize da to the derivative of the loss function
-        dan = [Math.loss_prime(output[j], expected[j])
-                for j in range(len(output))]
-        # print(f"dan: {dan}\n")
+        # dan = [Math.loss_prime(output[j], expected[j])
+        #         for j in range(len(output))]
+        
         for i in range(len(self.layers) - 1, -1, -1):
+            dan = substract_lists(self.layers[i].a, expected)
+            # print(f"dan: {dan}\n")
             # print(f"Output: {output},  Expected: {expected}, Input: {inpt}")
             # Get Layer
             l = self.layers[i]            
@@ -506,7 +517,7 @@ def train_network(samples: Dict[Tuple[int, ...], Tuple[int, ...]],
 
 def main() -> None:
     random.seed(0)
-    f = lambda x, y: x + y  # operation to learn
+    f = lambda x, y: x | y  # operation to learn
     # f = lambda x: ~x
     # f = lambda x: x + 100
     n_args = 2              # arity of operation
