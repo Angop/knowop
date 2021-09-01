@@ -79,8 +79,9 @@ class Math:
         """
         Return the derivative of the loss.
         """
-        return -expect / actual + (1 - expect) / (1 - actual)
-
+        loss = -expect / actual + (1 - expect) / (1 - actual)
+        # print(f"Actual: {actual}, Expect: {expect}, Loss: {loss}")
+        return loss
 
 
 
@@ -146,14 +147,20 @@ def propagate_forward(layers: List[Layer],
     '''
     Given trained layers, propagate an input forward
     '''
-    i = 0
-    for layer in layers:
-        # print(f"Layer {i}")
-        # print(f"initial: {layer.a}")
-        inpt = layer.activate(inpt)
-        # print(f"layer a: {layer.a}")
-        i += 1
-    return inpt
+    try: 
+        i = 0
+        for layer in layers:
+            # print(f"Layer {i}")
+            # print(f"initial: {layer.a}")
+            inpt = layer.activate(inpt)
+            # print(f"layer a: {layer.a}")
+            i += 1
+        return inpt
+    except OverflowError as e: 
+        print(e)
+        # print(layers[0].w)
+        # print(layers[0].b)
+        # exit program
 
 
 def hadamard(arr1: List[float], arr2: List[float]) -> List[float]:
@@ -192,7 +199,7 @@ class Network:
 
     def __init__(self, i_size: int, o_size: int):
         #Hyperparameters
-        self.numBatches = 100
+        self.numBatches = 291
         self.batchSize = 100
         self.learningRate = 0.1
 
@@ -219,7 +226,7 @@ class Network:
         """
         Update the learning rate given the number of iterations "count"
         """
-        baseRate = 0.1
+        baseRate = 0.4
         mult = 0.001
         mini = 1e-5
         lRate = - mult * count + baseRate
@@ -228,7 +235,6 @@ class Network:
             self.learningRate = mini
         else:
             self.learningRate = lRate
-        # decrease the learning rate exponentially
     
     def train(self, trainSet):
         """
@@ -254,14 +260,18 @@ class Network:
         """
         Propogates the input through the network and returns the output
         """
-        i = 0
-        for layer in self.layers:
-            # print(f"Layer {i}")
-            # print(f"initial: {layer.a}")
-            inpt = layer.activate(inpt)
-            # print(f"layer a: {layer.a}")
-            i += 1
-        return inpt
+        try:
+            i = 0
+            for layer in self.layers:
+                # print(f"Layer {i}")
+                # print(f"initial: {layer.a}")
+                inpt = layer.activate(inpt)
+                # print(f"layer a: {layer.a}")
+                i += 1
+            return inpt
+        except:
+            print("muji muji")
+            # print(f"{self.layers[i].b}")
     
     def updateDwns(self, dwn: List[List[float]], x: int):
         '''
@@ -289,7 +299,7 @@ class Network:
         # for each layer
         for i in range(len(self.layers)):
             # print(f"total dw: {self.layers[i].dw}")
-            # print(f"total db: {self.layers[i].db}")
+            # print(f"initial b: {self.layers[i].b}")
             # divide each dbn by batch size
             # print(f"db before updating: {self.layers[i].db}")
             self.layers[i].db = \
@@ -306,7 +316,8 @@ class Network:
                     # substract learning rate - dw from w
                     self.layers[i].w[n][w] -=\
                          self.learningRate * self.layers[i].dw[n][w]
-            # print(f"final dw: {self.layers[i].dw}")
+            # print(f"final b: {self.layers[i].b}")
+            # print(f"final w: {self.layers[i].w}")
             # Reset db and dw
             size = (len(self.layers[i].w), len(self.layers[i].w[0]))
             self.layers[i].dw = \
@@ -316,7 +327,7 @@ class Network:
 
     def backPropBatch(self, results: List[List[float]]):
         cost = self.getCost(results)
-        print(f"COST: {cost} LEARNING RATE: {self.learningRate}")
+        # print(f"COST: {cost} LEARNING RATE: {self.learningRate}")
         # weightGrads = []
         # biasGrads = []
         for output, expected, inpt in results:
@@ -343,7 +354,9 @@ class Network:
         # Initialize da to the derivative of the loss function
         dan = [Math.loss_prime(output[j], expected[j])
                 for j in range(len(output))]
+        # print(f"dan: {dan}\n")
         for i in range(len(self.layers) - 1, -1, -1):
+            # print(f"Output: {output},  Expected: {expected}, Input: {inpt}")
             # Get Layer
             l = self.layers[i]            
             # dzn = dan ⊙ gn'(zn)
@@ -355,8 +368,7 @@ class Network:
             # print(f"dan: {dan}\n")
             # print(f"gnzn: {gnzn}\n")
             dzn = hadamard(gnzn, dan)
-            # dzn = [[x] for x in dzn]
-            dzn = Math.transpose([dzn])
+            dzn = [[x] for x in dzn]
             # print(f"dzn: {dzn}\n")
             # dWn = dzn * aTn-1
             if i == 0:
@@ -374,9 +386,9 @@ class Network:
             dan = Math.matmul(wtn, dzn)
 
             dbn = dzn
+            dbn = [x[0] for x in dzn]
             # print(f"dbn: {dbn}")
             # dbns.append(dbn)
-            dbn = [x[0] for x in dzn]
             # Turn dan to a 1d list
             dan = [x[0] for x in dan]
             # Store in layer object
@@ -515,9 +527,9 @@ def main() -> None:
     for inputs in test_set:
         output = tuple(round(n, 2) for n in propagate_forward(network, inputs))
         bits = tuple(round(n) for n in output)
-        print("OUTPUT:", output)
-        print("BITACT:", bits)
-        print("BITEXP:", samples[inputs], end="\n\n")
+        # print("OUTPUT:", output)
+        # print("BITACT:", bits)
+        # print("BITEXP:", samples[inputs], end="\n\n")
 
 # def avgBiasArrs(arrs: List[List[List[float]]]):
 #     """
