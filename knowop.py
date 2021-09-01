@@ -380,11 +380,11 @@ class Network:
             # Get Layer
             l = self.layers[i]            
             # dzn = dan ⊙ gn'(zn)
-            gnzn = []
-            for n in range(len(l.z)):
+            # gnzn = []
+            # for n in range(len(l.z)):
                 # for each neuron
-                gnzn.append(Math.sigmoid_prime(l.z[n]) if l.g is Math.sigmoid
-                    else Math.relu_prime(l.z[n])) 
+                # gnzn.append(Math.sigmoid_prime(l.z[n]) if l.g is Math.sigmoid
+                    # else Math.relu_prime(l.z[n])) 
             # print(f"dan: {dan}\n")
             # print(f"gnzn: {gnzn}\n")
             dzn = substract_lists(self.layers[i].a, expected)
