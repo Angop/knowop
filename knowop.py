@@ -208,7 +208,7 @@ class Network:
 
     def __init__(self, i_size: int, o_size: int):
         #Hyperparameters
-        self.numBatches = 500 
+        self.numBatches = 300 
         self.batchSize = 100
         self.learningRate = 0.2
 
@@ -558,6 +558,7 @@ def main() -> None:
         if samples[inputs] == bits:
             count += 1
     print(f"Correct: {count}")
+    print("Train Size:", len(train_set), "Test Size:", len(test_set))
 # def avgBiasArrs(arrs: List[List[List[float]]]):
 #     """
 #     """
